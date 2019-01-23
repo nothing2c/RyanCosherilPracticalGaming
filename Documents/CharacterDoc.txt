@@ -1,0 +1,30 @@
+The character in this game will be controlled by using the keyboard to move and interact with other game objects and the mouse will be used to attack.
+The character will have health and be able to use potions
+
+---Moving---
+The character will be able to jump, move forward, backward, left, right. When the character moves, the character will turn to the direction it is moving based on the key pressed.
+The character will be able to move while jumping.
+-jump(spacebar)
+-moveForward(W)
+-moveBackward(S)
+-moveLeft(A)
+-moveRight(D)
+The camera will be third person and follow the character as they move but will not rotate to follow the characters direction
+
+---Attacking---
+The character will attack wtih melee or ranged, depending on which mouse button is pressed
+-meleeAttack(rightMouseButton)
+-rangedAttack(leftMouseButton)
+The character will be able to toggle lock on to an enemy if they are in front of them and if they are in range
+-toggleLock(F)
+The character will only attack the way they are facing
+
+---Interacting---
+The character will be able to interact with certain other game objects by pressing E and if they are close enough to them
+-interact(E)
+
+---Health---
+The character will have a max health and will die if it reaches 0.
+the character will be able to use potions by pressing H if he has any.
+The character will not be able to heal pased his max health.
+-heal(H)
