@@ -2,7 +2,8 @@ The character in this game will be controlled by using the keyboard to move and 
 The character will have health and be able to use potions
 
 ---Moving---
-The character will be able to jump, move forward, backward, left, right. When the character moves, the character will turn to the direction it is moving based on the key pressed.
+The character will be able to jump, move forward and backward and turn left and right. When the character moves, the character will turn to the direction it is moving based on the key pressed
+and move forward.
 The character will be able to move while jumping.
 -jump(spacebar)
 -moveForward(W)
@@ -18,6 +19,10 @@ The character will attack wtih melee or ranged, depending on which mouse button 
 The character will be able to toggle lock on to an enemy if they are in front of them and if they are in range
 -toggleLock(F)
 The character will only attack the way they are facing
+When Locked on, the character will always face the target and will be able to strafe left and right and walk backwards
+-strafeLeft(A)
+-strafeRight(D)
+-moveBackwords(S)
 
 ---Interacting---
 The character will be able to interact with certain other game objects by pressing E and if they are close enough to them
