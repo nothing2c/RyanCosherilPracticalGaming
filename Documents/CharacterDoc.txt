@@ -2,15 +2,19 @@ The character in this game will be controlled by using the keyboard to move and 
 The character will have health and be able to use potions
 
 ---Moving---
-The character will be able to jump, move forward and backward and turn left and right. When the character moves, the character will turn to the direction it is moving based on the key pressed
+The character will be able to jump, move forward and turn around, left and right. When the character moves, the character will turn to the direction it is moving based on the key pressed
 and move forward.
 The character will be able to move while jumping.
 -jump(spacebar)
 -moveForward(W)
--moveBackward(S)
--moveLeft(A)
--moveRight(D)
-The camera will be third person and follow the character as they move but will not rotate to follow the characters direction
+-turnAround(S)
+-turnLeft(A)
+-turnRight(D)
+Moving forward will be based on the cameras direction
+
+---Camera---
+The camera will be third person and follow the character as they move
+The Camera will Rotate around the character using the mouse
 
 ---Attacking---
 The character will attack wtih melee or ranged, depending on which mouse button is pressed
