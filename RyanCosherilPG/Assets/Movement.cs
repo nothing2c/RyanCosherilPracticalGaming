@@ -8,6 +8,7 @@ public class Movement : MonoBehaviour
     /// direction character will move
     /// </summary>
     Vector3 direction;
+    Vector3 camToPlayer;
     /// <summary>
     /// speed at which character moves
     /// </summary>
@@ -28,14 +29,13 @@ public class Movement : MonoBehaviour
         currentState = States.idle;
         speed = 2;
         cameraTurnSpeed = 10;
-        //gameObject.AddComponent<Rigidbody>();
-        //rb = gameObject.GetComponent<Rigidbody>();
+        camToPlayer = transform.position - Camera.main.transform.position;
+        gameObject.AddComponent<Rigidbody>();
+        rb = gameObject.GetComponent<Rigidbody>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
-        Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
 
         switch (currentState)
         {
@@ -48,9 +48,11 @@ public class Movement : MonoBehaviour
                     turnRight();
                 if (shouldTurnAround())
                     turnAround();
-                if(isIdle())
+                if (isIdle())
+                {
                     direction = Vector3.zero;
                     currentState = States.idle;
+                }
                 break;
             case States.moving:
                 if (shouldMoveForward())
@@ -62,10 +64,16 @@ public class Movement : MonoBehaviour
                 if (shouldTurnAround())
                     turnAround();
                 if (isIdle())
+                {
                     direction = Vector3.zero;
                     currentState = States.idle;
+                }
                 break;
         }
+
+        Camera.main.transform.position = transform.position - camToPlayer;
+        Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
+        camToPlayer = transform.position - Camera.main.transform.position;
     }
 
     /// <summary>
@@ -94,6 +102,11 @@ public class Movement : MonoBehaviour
     private void moveForward()
     {
         direction = Camera.main.transform.forward;
+        if (transform.forward != direction)
+        {
+            transform.forward = direction;
+            Debug.Log(direction + " " + transform.forward);
+        }
         transform.position += speed * direction * Time.deltaTime;
         currentState = States.moving;
     }
@@ -110,8 +123,14 @@ public class Movement : MonoBehaviour
     /// turns the character to face left of the camera
     /// </summary>
     private void turnLeft()
-    {
+    {       
         direction = -Camera.main.transform.right;
+        if(transform.forward != direction)
+        {
+            transform.forward = direction;
+            Debug.Log(direction + " " + transform.forward);
+        }
+        
         transform.position += speed * direction * Time.deltaTime;
         currentState = States.moving;
     }
@@ -130,6 +149,11 @@ public class Movement : MonoBehaviour
     private void turnRight()
     {
         direction = Camera.main.transform.right;
+        if (transform.forward != direction)
+        {
+            transform.forward = direction;
+            Debug.Log(direction + " " + transform.forward);
+        }
         transform.position += speed * direction * Time.deltaTime;
         currentState = States.moving;
     }
@@ -148,6 +172,11 @@ public class Movement : MonoBehaviour
     private void turnAround()
     {
         direction = -Camera.main.transform.forward;
+        if (transform.forward != direction)
+        {
+            transform.forward = direction;
+            Debug.Log(direction + " " + transform.forward);
+        }
         transform.position += speed * direction * Time.deltaTime;
         currentState = States.moving;
     }
