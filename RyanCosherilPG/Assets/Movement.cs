@@ -9,6 +9,7 @@ public class Movement : MonoBehaviour
     /// </summary>
     Vector3 direction;
     Vector3 camToPlayer;
+    GameObject target;
     /// <summary>
     /// speed at which character moves
     /// </summary>
@@ -17,7 +18,7 @@ public class Movement : MonoBehaviour
     /// speed at which camera turns
     /// </summary>
     float cameraTurnSpeed;
-    enum States {idle, moving, jumping}
+    enum States {idle, moving, jumping, lockedOn}
     /// <summary>
     /// all possible states of character
     /// </summary>
@@ -26,13 +27,14 @@ public class Movement : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
+        target = GameObject.Find("enemy");
         currentState = States.idle;
         speed = 2;
         cameraTurnSpeed = 10;
         camToPlayer = transform.position - Camera.main.transform.position;
-        gameObject.AddComponent<Rigidbody>();
-        rb = gameObject.GetComponent<Rigidbody>();
-	}
+        //gameObject.AddComponent<Rigidbody>();
+        //rb = gameObject.GetComponent<Rigidbody>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -53,7 +55,13 @@ public class Movement : MonoBehaviour
                     direction = Vector3.zero;
                     currentState = States.idle;
                 }
+                if(shouldLockOn())
+                {
+                    if (canLockOn())
+                        lockOn();
+                }
                 break;
+
             case States.moving:
                 if (shouldMoveForward())
                     moveForward();
@@ -68,11 +76,34 @@ public class Movement : MonoBehaviour
                     direction = Vector3.zero;
                     currentState = States.idle;
                 }
+                if (shouldLockOn())
+                {
+                    if (canLockOn())
+                        lockOn();
+                }
+                break;
+            case States.lockedOn:
+                maintainLock();
+
+                if (shouldMoveForward())
+                    approach();
+                if (shouldTurnLeft())
+                    strafeLeft();
+                if (shouldTurnRight())
+                    strafeRight();
+                if (shouldTurnAround())
+                    moveBack();
+                if (shouldLockOn())
+                    breakLock();
                 break;
         }
+        Debug.Log(currentState);
 
         Camera.main.transform.position = transform.position - camToPlayer;
-        Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
+
+        if(currentState != States.lockedOn)
+            Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
+
         camToPlayer = transform.position - Camera.main.transform.position;
     }
 
@@ -102,11 +133,10 @@ public class Movement : MonoBehaviour
     private void moveForward()
     {
         direction = Camera.main.transform.forward;
+
         if (transform.forward != direction)
-        {
             transform.forward = direction;
-            Debug.Log(direction + " " + transform.forward);
-        }
+
         transform.position += speed * direction * Time.deltaTime;
         currentState = States.moving;
     }
@@ -125,11 +155,9 @@ public class Movement : MonoBehaviour
     private void turnLeft()
     {       
         direction = -Camera.main.transform.right;
+
         if(transform.forward != direction)
-        {
             transform.forward = direction;
-            Debug.Log(direction + " " + transform.forward);
-        }
         
         transform.position += speed * direction * Time.deltaTime;
         currentState = States.moving;
@@ -149,11 +177,10 @@ public class Movement : MonoBehaviour
     private void turnRight()
     {
         direction = Camera.main.transform.right;
+
         if (transform.forward != direction)
-        {
             transform.forward = direction;
-            Debug.Log(direction + " " + transform.forward);
-        }
+
         transform.position += speed * direction * Time.deltaTime;
         currentState = States.moving;
     }
@@ -171,12 +198,13 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void turnAround()
     {
-        direction = -Camera.main.transform.forward;
+        direction.x = -Camera.main.transform.forward.x;     //<-----------Theres an idea here
+        direction.z = -Camera.main.transform.forward.z;
+        direction.y = 0;
+
         if (transform.forward != direction)
-        {
             transform.forward = direction;
-            Debug.Log(direction + " " + transform.forward);
-        }
+
         transform.position += speed * direction * Time.deltaTime;
         currentState = States.moving;
     }
@@ -195,6 +223,61 @@ public class Movement : MonoBehaviour
     private void jump()
     {
 
+    }
+
+    private bool shouldLockOn()
+    {
+        return Input.GetKeyDown("f");
+    }
+
+    private bool canLockOn()
+    {
+        if(Vector3.Dot(Camera.main.transform.forward, target.transform.position) >0)
+        {
+            if ((target.transform.position - transform.position).magnitude <= 8)
+                return true;
+        }
+
+        return false;
+    }
+
+    private void lockOn ()
+    {
+        //Camera.main.transform.forward = target.transform.position - transform.position;
+        Debug.Log("locked on");
+        target.GetComponent<Enemy>().setIsTargeted(true);
+        currentState = States.lockedOn;
+    }
+
+    private void maintainLock()
+    {
+        transform.forward = target.transform.position - transform.position;
+        Camera.main.transform.forward = transform.forward;
+    }
+
+    private void breakLock()
+    {
+        currentState = States.idle;
+    }
+
+    private void approach()
+    {
+        transform.position += speed * Camera.main.transform.forward * Time.deltaTime;
+    }
+
+    private void strafeLeft()
+    {
+        transform.position += speed * -Camera.main.transform.right * Time.deltaTime;
+    }
+
+    private void strafeRight()
+    {
+        transform.position += speed * Camera.main.transform.right * Time.deltaTime;
+    }
+
+    private void moveBack()
+    {
+        transform.position += speed * -Camera.main.transform.forward * Time.deltaTime;
     }
 
     /// <summary>
