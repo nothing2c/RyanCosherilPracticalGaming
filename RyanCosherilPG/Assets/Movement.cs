@@ -132,7 +132,9 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void moveForward()
     {
-        direction = Camera.main.transform.forward;
+        direction.x = Camera.main.transform.forward.x;     //<-----------Theres an idea here
+        direction.z = Camera.main.transform.forward.z;
+        direction.y = 0;
 
         if (transform.forward != direction)
             transform.forward = direction;
@@ -153,10 +155,12 @@ public class Movement : MonoBehaviour
     /// turns the character to face left of the camera
     /// </summary>
     private void turnLeft()
-    {       
-        direction = -Camera.main.transform.right;
+    {
+        direction.x = -Camera.main.transform.right.x;     //<-----------Theres an idea here
+        direction.z = -Camera.main.transform.right.z;
+        direction.y = 0;
 
-        if(transform.forward != direction)
+        if (transform.forward != direction)
             transform.forward = direction;
         
         transform.position += speed * direction * Time.deltaTime;
@@ -176,7 +180,9 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void turnRight()
     {
-        direction = Camera.main.transform.right;
+        direction.x = Camera.main.transform.right.x;     //<-----------Theres an idea here
+        direction.z = Camera.main.transform.right.z;
+        direction.y = 0;
 
         if (transform.forward != direction)
             transform.forward = direction;
