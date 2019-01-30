@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
     private bool isTargeted;
+    private TargetingIndicator indicator;
 
 	// Use this for initialization
 	void Start () {
@@ -14,7 +15,13 @@ public class Enemy : MonoBehaviour {
 	void Update () {
 		if(isTargeted)
         {
-            transform.Rotate(Vector3.up, 90 * Time.deltaTime);
+            if(!indicator)
+                indicator = gameObject.AddComponent<TargetingIndicator>();
+        }
+        else
+        {
+            if (indicator)        
+                Destroy(gameObject.GetComponent<TargetingIndicator>());
         }
 	}
 

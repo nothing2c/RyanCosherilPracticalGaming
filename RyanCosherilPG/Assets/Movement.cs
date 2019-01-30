@@ -9,11 +9,13 @@ public class Movement : MonoBehaviour
     /// </summary>
     Vector3 direction;
     Vector3 camToPlayer;
+    Vector3 orieantation;
     GameObject target;
     /// <summary>
     /// speed at which character moves
     /// </summary>
     float speed;
+    float lockOnRange;
     /// <summary>
     /// speed at which camera turns
     /// </summary>
@@ -29,7 +31,8 @@ public class Movement : MonoBehaviour
 	void Start () {
         target = GameObject.Find("enemy");
         currentState = States.idle;
-        speed = 2;
+        speed = 3;
+        lockOnRange = 10;
         cameraTurnSpeed = 10;
         camToPlayer = transform.position - Camera.main.transform.position;
         //gameObject.AddComponent<Rigidbody>();
@@ -55,7 +58,7 @@ public class Movement : MonoBehaviour
                     direction = Vector3.zero;
                     currentState = States.idle;
                 }
-                if(shouldLockOn())
+                if(shouldToggleLockOn())
                 {
                     if (canLockOn())
                         lockOn();
@@ -76,15 +79,15 @@ public class Movement : MonoBehaviour
                     direction = Vector3.zero;
                     currentState = States.idle;
                 }
-                if (shouldLockOn())
+                if (shouldToggleLockOn())
                 {
                     if (canLockOn())
                         lockOn();
                 }
                 break;
+
             case States.lockedOn:
                 maintainLock();
-
                 if (shouldMoveForward())
                     approach();
                 if (shouldTurnLeft())
@@ -93,17 +96,13 @@ public class Movement : MonoBehaviour
                     strafeRight();
                 if (shouldTurnAround())
                     moveBack();
-                if (shouldLockOn())
+                if (shouldToggleLockOn())
                     breakLock();
                 break;
         }
-        Debug.Log(currentState);
 
         Camera.main.transform.position = transform.position - camToPlayer;
-
-        if(currentState != States.lockedOn)
-            Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
-
+        Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
         camToPlayer = transform.position - Camera.main.transform.position;
     }
 
@@ -132,9 +131,9 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void moveForward()
     {
-        direction.x = Camera.main.transform.forward.x;     //<-----------Theres an idea here
+        direction.x = Camera.main.transform.forward.x;
         direction.z = Camera.main.transform.forward.z;
-        direction.y = 0;
+        direction.y = transform.position.y; ;
 
         if (transform.forward != direction)
             transform.forward = direction;
@@ -156,9 +155,9 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void turnLeft()
     {
-        direction.x = -Camera.main.transform.right.x;     //<-----------Theres an idea here
+        direction.x = -Camera.main.transform.right.x;
         direction.z = -Camera.main.transform.right.z;
-        direction.y = 0;
+        direction.y = transform.position.y; ;
 
         if (transform.forward != direction)
             transform.forward = direction;
@@ -180,9 +179,9 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void turnRight()
     {
-        direction.x = Camera.main.transform.right.x;     //<-----------Theres an idea here
+        direction.x = Camera.main.transform.right.x;
         direction.z = Camera.main.transform.right.z;
-        direction.y = 0;
+        direction.y = transform.position.y; ;
 
         if (transform.forward != direction)
             transform.forward = direction;
@@ -204,9 +203,9 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void turnAround()
     {
-        direction.x = -Camera.main.transform.forward.x;     //<-----------Theres an idea here
+        direction.x = -Camera.main.transform.forward.x;
         direction.z = -Camera.main.transform.forward.z;
-        direction.y = 0;
+        direction.y = transform.position.y; ;
 
         if (transform.forward != direction)
             transform.forward = direction;
@@ -231,7 +230,7 @@ public class Movement : MonoBehaviour
 
     }
 
-    private bool shouldLockOn()
+    private bool shouldToggleLockOn()
     {
         return Input.GetKeyDown("f");
     }
@@ -240,7 +239,7 @@ public class Movement : MonoBehaviour
     {
         if(Vector3.Dot(Camera.main.transform.forward, target.transform.position) >0)
         {
-            if ((target.transform.position - transform.position).magnitude <= 8)
+            if ((target.transform.position - transform.position).magnitude <= lockOnRange)
                 return true;
         }
 
@@ -249,41 +248,56 @@ public class Movement : MonoBehaviour
 
     private void lockOn ()
     {
-        //Camera.main.transform.forward = target.transform.position - transform.position;
-        Debug.Log("locked on");
         target.GetComponent<Enemy>().setIsTargeted(true);
         currentState = States.lockedOn;
     }
 
     private void maintainLock()
     {
-        transform.forward = target.transform.position - transform.position;
-        Camera.main.transform.forward = transform.forward;
+        orieantation.x = (target.transform.position.x - transform.position.x);
+        orieantation.z = (target.transform.position.z - transform.position.z);
+        orieantation.y = transform.position.y;
+
+        transform.forward = orieantation;
+        if ((target.transform.position - transform.position).magnitude > lockOnRange+1)
+            breakLock();
+        //Camera.main.transform.LookAt(target.transform.position);
+        //Camera.main.transform.forward = ;
+        //Camera.main.transform.position = transform.position - camToPlayer;
     }
 
     private void breakLock()
     {
         currentState = States.idle;
+        target.GetComponent<Enemy>().setIsTargeted(false);
     }
 
     private void approach()
     {
-        transform.position += speed * Camera.main.transform.forward * Time.deltaTime;
+        direction = transform.forward;
+
+        transform.position += speed * direction * Time.deltaTime;
     }
 
     private void strafeLeft()
     {
-        transform.position += speed * -Camera.main.transform.right * Time.deltaTime;
+        direction = -transform.right;
+
+        transform.position += speed * direction * Time.deltaTime;
     }
 
     private void strafeRight()
     {
-        transform.position += speed * Camera.main.transform.right * Time.deltaTime;
+        direction = transform.right;
+
+        transform.position += speed * direction * Time.deltaTime;
     }
 
     private void moveBack()
     {
-        transform.position += speed * -Camera.main.transform.forward * Time.deltaTime;
+        direction = -transform.forward;
+
+        transform.position += speed * direction * Time.deltaTime;
     }
 
     /// <summary>
