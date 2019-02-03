@@ -10,6 +10,8 @@ public class TargetingIndicator : MonoBehaviour {
 	void Start () {
 
         targetingIndicator = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/TargetIndicator/Indicator"),transform);
+        targetingIndicator.transform.parent = transform;
+        targetingIndicator.transform.localPosition = transform.up * 1.5f;
     }
 	
 	// Update is called once per frame

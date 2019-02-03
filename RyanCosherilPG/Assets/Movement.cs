@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using System;
 
 public class Movement : MonoBehaviour
 {
@@ -10,7 +12,8 @@ public class Movement : MonoBehaviour
     Vector3 direction;
     Vector3 camToPlayer;
     Vector3 orieantation;
-    GameObject target;
+    List<Enemy> possibleTargets;
+    Enemy target;
     /// <summary>
     /// speed at which character moves
     /// </summary>
@@ -25,23 +28,26 @@ public class Movement : MonoBehaviour
     /// all possible states of character
     /// </summary>
     States currentState;
-    Rigidbody rb;
+    Health myhealth;
+    //Rigidbody rb;
 
 	// Use this for initialization
 	void Start () {
-        target = GameObject.Find("enemy");
         currentState = States.idle;
         speed = 3;
         lockOnRange = 10;
         cameraTurnSpeed = 10;
         camToPlayer = transform.position - Camera.main.transform.position;
+        myhealth = gameObject.AddComponent<Health>();
+        possibleTargets = new List<Enemy>();
         //gameObject.AddComponent<Rigidbody>();
         //rb = gameObject.GetComponent<Rigidbody>();
     }
 	
 	// Update is called once per frame
 	void Update () {
-
+        
+        
         switch (currentState)
         {
             case States.idle:
@@ -60,8 +66,9 @@ public class Movement : MonoBehaviour
                 }
                 if(shouldToggleLockOn())
                 {
+                    aquireTargets();
                     if (canLockOn())
-                        lockOn();
+                        lockOn(0);
                 }
                 break;
 
@@ -81,8 +88,9 @@ public class Movement : MonoBehaviour
                 }
                 if (shouldToggleLockOn())
                 {
+                    aquireTargets();
                     if (canLockOn())
-                        lockOn();
+                        lockOn(0);
                 }
                 break;
 
@@ -98,6 +106,8 @@ public class Movement : MonoBehaviour
                     moveBack();
                 if (shouldToggleLockOn())
                     breakLock();
+                if (shouldMeleeAttack())
+                    meleeAttack();
                 break;
         }
 
@@ -235,20 +245,59 @@ public class Movement : MonoBehaviour
         return Input.GetKeyDown("f");
     }
 
-    private bool canLockOn()
+    private void aquireTargets()
     {
-        if(Vector3.Dot(Camera.main.transform.forward, target.transform.position) >0)
+        foreach (Enemy e in Collections.targets)
         {
-            if ((target.transform.position - transform.position).magnitude <= lockOnRange)
-                return true;
+            if (Vector3.Dot(Camera.main.transform.forward, e.transform.position) > 0)
+            {
+                if ((e.transform.position - transform.position).magnitude <= lockOnRange)
+                {
+                    if (!possibleTargets.Contains(e))
+                        possibleTargets.Add(e);
+                }   
+            }
         }
-
-        return false;
     }
 
-    private void lockOn ()
+    private void keepTargets()
     {
-        target.GetComponent<Enemy>().setIsTargeted(true);
+        Enemy targetLost = null;
+
+        foreach (Enemy e in possibleTargets)
+        {
+            if ((e.transform.position - transform.position).magnitude > lockOnRange+1)
+                targetLost = e;
+        }
+
+        possibleTargets.Remove(targetLost);
+
+        aquireTargets();
+    }
+
+    private bool canLockOn()
+    {
+        if (possibleTargets.Count != 0)
+            return true;
+        else
+            return false;
+    }
+
+    private void lockOn (int index)
+    {
+        try
+        {
+            target = possibleTargets[index];
+        }
+        catch(ArgumentOutOfRangeException e)
+        {
+            if (index == -1)
+                target = possibleTargets[possibleTargets.Count-1];
+            else
+                target = possibleTargets[0];
+        }
+        
+        target.setIsTargeted(true);
         currentState = States.lockedOn;
     }
 
@@ -259,8 +308,24 @@ public class Movement : MonoBehaviour
         orieantation.y = transform.position.y;
 
         transform.forward = orieantation;
+
+        keepTargets();
+
+        if(Input.GetAxis("Mouse ScrollWheel") > 0)
+        {
+            target.setIsTargeted(false);
+            Debug.Log("scroll up");
+            lockOn(possibleTargets.IndexOf(target)+1);
+        }
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0)
+        {
+            target.setIsTargeted(false);
+            lockOn(possibleTargets.IndexOf(target) - 1);
+        }
+
         if ((target.transform.position - transform.position).magnitude > lockOnRange+1)
             breakLock();
+
         //Camera.main.transform.LookAt(target.transform.position);
         //Camera.main.transform.forward = ;
         //Camera.main.transform.position = transform.position - camToPlayer;
@@ -269,7 +334,8 @@ public class Movement : MonoBehaviour
     private void breakLock()
     {
         currentState = States.idle;
-        target.GetComponent<Enemy>().setIsTargeted(false);
+        target.setIsTargeted(false);
+        possibleTargets.Clear();
     }
 
     private void approach()
@@ -300,12 +366,21 @@ public class Movement : MonoBehaviour
         transform.position += speed * direction * Time.deltaTime;
     }
 
+    private bool shouldMeleeAttack()
+    {
+        return Input.GetMouseButtonDown(0);
+    }
+
     /// <summary>
     /// attacks with melee weapon
     /// </summary>
     private void meleeAttack()
     {
-        throw new System.NotImplementedException();
+        if(target)
+        {
+            target.SendMessage("damage", -5);
+            Debug.Log("Succesful Hit");
+        }
     }
 
     /// <summary>
