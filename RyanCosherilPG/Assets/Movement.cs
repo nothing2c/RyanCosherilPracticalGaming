@@ -115,12 +115,10 @@ public class Movement : MonoBehaviour
                 break;
         }
 
-        if(currentState!=States.dead)
-        {
             Camera.main.transform.position = transform.position - camToPlayer;
             Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
             camToPlayer = transform.position - Camera.main.transform.position;
-        }
+        
     }
 
     /// <summary>
@@ -154,6 +152,8 @@ public class Movement : MonoBehaviour
 
         if (transform.forward != direction)
             transform.forward = direction;
+
+        //direction = transform.forward;
 
         transform.position += speed * direction * Time.deltaTime;
         currentState = States.moving;
