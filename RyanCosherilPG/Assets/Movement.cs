@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.SceneManagement;
 
 public class Movement : MonoBehaviour
 {
@@ -23,12 +24,13 @@ public class Movement : MonoBehaviour
     /// speed at which camera turns
     /// </summary>
     float cameraTurnSpeed;
-    enum States {idle, moving, jumping, lockedOn}
+    enum States {idle, moving, jumping, lockedOn, dead}
     /// <summary>
     /// all possible states of character
     /// </summary>
     States currentState;
     Health myhealth;
+    public Slider healthBar;
     //Rigidbody rb;
 
 	// Use this for initialization
@@ -108,12 +110,17 @@ public class Movement : MonoBehaviour
                     breakLock();
                 if (shouldMeleeAttack())
                     meleeAttack();
+                if (shouldRangedAttack())
+                    rangedAttack();
                 break;
         }
 
-        Camera.main.transform.position = transform.position - camToPlayer;
-        Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
-        camToPlayer = transform.position - Camera.main.transform.position;
+        if(currentState!=States.dead)
+        {
+            Camera.main.transform.position = transform.position - camToPlayer;
+            Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
+            camToPlayer = transform.position - Camera.main.transform.position;
+        }
     }
 
     /// <summary>
@@ -314,7 +321,6 @@ public class Movement : MonoBehaviour
         if(Input.GetAxis("Mouse ScrollWheel") > 0)
         {
             target.setIsTargeted(false);
-            Debug.Log("scroll up");
             lockOn(possibleTargets.IndexOf(target)+1);
         }
         else if (Input.GetAxis("Mouse ScrollWheel") < 0)
@@ -335,6 +341,7 @@ public class Movement : MonoBehaviour
     {
         currentState = States.idle;
         target.setIsTargeted(false);
+        target = null;
         possibleTargets.Clear();
     }
 
@@ -377,10 +384,12 @@ public class Movement : MonoBehaviour
     private void meleeAttack()
     {
         if(target)
-        {
-            target.SendMessage("damage", -5);
-            Debug.Log("Succesful Hit");
-        }
+            target.SendMessage("damage", -10);
+    }
+
+    private bool shouldRangedAttack()
+    {
+        return Input.GetMouseButtonDown(1);
     }
 
     /// <summary>
@@ -388,7 +397,32 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void rangedAttack()
     {
-        throw new System.NotImplementedException();
+        myhealth.adjustHealth(-10);
+        healthBar.value = myhealth.calculateHealth();
+
+        if (myhealth.currentHealth <= 0)
+            death();
+    }
+
+    void death()
+    {
+        GameObject.Find("HUD").AddComponent<Text>();
+        Text youDied = GameObject.Find("HUD").GetComponent<Text>();
+        youDied.text = "You Died";
+        youDied.color = Color.black;
+        youDied.fontSize = 100;
+        youDied.font = Resources.Load<Font>("brotherhood");
+        youDied.alignment = TextAnchor.MiddleCenter;
+
+        currentState = States.dead;
+
+        Invoke("reloadScene", 3);
+    }
+
+    void reloadScene()
+    {
+        Scene loadedLevel = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(loadedLevel.buildIndex);
     }
 
     /// <summary>

@@ -52,5 +52,18 @@ public class Enemy : MonoBehaviour {
     {
         enemyHealth.adjustHealth(damage);
         healthBar.value = enemyHealth.calculateHealth();
+
+        if (enemyHealth.currentHealth <= 0)
+        {
+            GameObject.Find("Player").SendMessage("breakLock");
+            death();
+        }
+            
+    }
+
+    void death()
+    {
+        Collections.targets.Remove(this);
+        Destroy(gameObject);
     }
 }
