@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class Movement : MonoBehaviour
 {
+    Animator animate;
     /// <summary>
     /// direction character will move
     /// </summary>
@@ -18,32 +19,37 @@ public class Movement : MonoBehaviour
     /// <summary>
     /// speed at which character moves
     /// </summary>
-    float speed;
+    float runSpeed;
+    float walkSpeed;
+    float jumpHeight;
     float lockOnRange;
     /// <summary>
     /// speed at which camera turns
     /// </summary>
     float cameraTurnSpeed;
-    enum States {idle, moving, jumping, lockedOn, dead}
+    enum States {lockedOn, freeRoam}
     /// <summary>
     /// all possible states of character
     /// </summary>
     States currentState;
     Health myhealth;
     public Slider healthBar;
-    //Rigidbody rb;
+    Rigidbody rb;
 
 	// Use this for initialization
 	void Start () {
-        currentState = States.idle;
-        speed = 3;
+        currentState = States.freeRoam;
+        runSpeed = 6;
+        walkSpeed = runSpeed / 2;
         lockOnRange = 10;
-        cameraTurnSpeed = 10;
+        cameraTurnSpeed = 20;
+        jumpHeight = 5;
         camToPlayer = transform.position - Camera.main.transform.position;
         myhealth = gameObject.AddComponent<Health>();
         possibleTargets = new List<Enemy>();
-        //gameObject.AddComponent<Rigidbody>();
-        //rb = gameObject.GetComponent<Rigidbody>();
+        gameObject.AddComponent<Rigidbody>();
+        rb = gameObject.GetComponent<Rigidbody>();
+        animate = GetComponent<Animator>();
     }
 	
 	// Update is called once per frame
@@ -52,7 +58,8 @@ public class Movement : MonoBehaviour
         
         switch (currentState)
         {
-            case States.idle:
+            case States.freeRoam:
+                animate.SetBool("IsMoving", true);
                 if (shouldMoveForward())
                     moveForward();
                 if (shouldTurnLeft())
@@ -61,34 +68,7 @@ public class Movement : MonoBehaviour
                     turnRight();
                 if (shouldTurnAround())
                     turnAround();
-                if (isIdle())
-                {
-                    direction = Vector3.zero;
-                    currentState = States.idle;
-                }
                 if(shouldToggleLockOn())
-                {
-                    aquireTargets();
-                    if (canLockOn())
-                        lockOn(0);
-                }
-                break;
-
-            case States.moving:
-                if (shouldMoveForward())
-                    moveForward();
-                if (shouldTurnLeft())
-                    turnLeft();
-                if (shouldTurnRight())
-                    turnRight();
-                if (shouldTurnAround())
-                    turnAround();
-                if (isIdle())
-                {
-                    direction = Vector3.zero;
-                    currentState = States.idle;
-                }
-                if (shouldToggleLockOn())
                 {
                     aquireTargets();
                     if (canLockOn())
@@ -128,7 +108,6 @@ public class Movement : MonoBehaviour
     {
         if (!shouldMoveForward() && !shouldTurnLeft() && !shouldTurnRight() && !shouldTurnAround())
             return true;
-
         else
             return false;
     }
@@ -153,10 +132,7 @@ public class Movement : MonoBehaviour
         if (transform.forward != direction)
             transform.forward = direction;
 
-        //direction = transform.forward;
-
-        transform.position += speed * direction * Time.deltaTime;
-        currentState = States.moving;
+        transform.position += runSpeed * direction * Time.deltaTime;
     }
 
     /// <summary>
@@ -178,9 +154,8 @@ public class Movement : MonoBehaviour
 
         if (transform.forward != direction)
             transform.forward = direction;
-        
-        transform.position += speed * direction * Time.deltaTime;
-        currentState = States.moving;
+
+        transform.position += runSpeed * direction * Time.deltaTime;
     }
 
     /// <summary>
@@ -203,8 +178,7 @@ public class Movement : MonoBehaviour
         if (transform.forward != direction)
             transform.forward = direction;
 
-        transform.position += speed * direction * Time.deltaTime;
-        currentState = States.moving;
+        transform.position += runSpeed * direction * Time.deltaTime;
     }
 
     /// <summary>
@@ -227,8 +201,7 @@ public class Movement : MonoBehaviour
         if (transform.forward != direction)
             transform.forward = direction;
 
-        transform.position += speed * direction * Time.deltaTime;
-        currentState = States.moving;
+        transform.position += runSpeed * direction * Time.deltaTime;
     }
 
     /// <summary>
@@ -236,7 +209,7 @@ public class Movement : MonoBehaviour
     /// </summary>
     private bool shouldJump()
     {
-        return Input.GetKeyDown(KeyCode.Space);
+        return (Input.GetKeyUp(KeyCode.Space));
     }
 
     /// <summary>
@@ -244,7 +217,7 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void jump()
     {
-
+        rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
     }
 
     private bool shouldToggleLockOn()
@@ -306,6 +279,7 @@ public class Movement : MonoBehaviour
         
         target.setIsTargeted(true);
         currentState = States.lockedOn;
+        animate.SetBool("IsLockedOn", true);
     }
 
     private void maintainLock()
@@ -339,7 +313,6 @@ public class Movement : MonoBehaviour
 
     private void breakLock()
     {
-        currentState = States.idle;
         target.setIsTargeted(false);
         target = null;
         possibleTargets.Clear();
@@ -347,30 +320,30 @@ public class Movement : MonoBehaviour
 
     private void approach()
     {
-        direction = transform.forward;
+        direction = transform.forward; 
 
-        transform.position += speed * direction * Time.deltaTime;
+        transform.position += walkSpeed * direction * Time.deltaTime;
     }
 
     private void strafeLeft()
     {
         direction = -transform.right;
 
-        transform.position += speed * direction * Time.deltaTime;
+        transform.position += walkSpeed * direction * Time.deltaTime;        
     }
 
     private void strafeRight()
     {
         direction = transform.right;
 
-        transform.position += speed * direction * Time.deltaTime;
+        transform.position += walkSpeed * direction * Time.deltaTime;
     }
 
     private void moveBack()
     {
         direction = -transform.forward;
 
-        transform.position += speed * direction * Time.deltaTime;
+        transform.position += walkSpeed * direction * Time.deltaTime;   
     }
 
     private bool shouldMeleeAttack()
@@ -383,7 +356,7 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void meleeAttack()
     {
-        if(target)
+        if (target)
             target.SendMessage("damage", -10);
     }
 
@@ -413,8 +386,6 @@ public class Movement : MonoBehaviour
         youDied.fontSize = 100;
         youDied.font = Resources.Load<Font>("brotherhood");
         youDied.alignment = TextAnchor.MiddleCenter;
-
-        currentState = States.dead;
 
         Invoke("reloadScene", 3);
     }
