@@ -27,7 +27,7 @@ public class Movement : MonoBehaviour
     /// speed at which camera turns
     /// </summary>
     float cameraTurnSpeed;
-    enum States {lockedOn, freeRoam}
+    enum States {lockedOn, freeRoam, inAir, attacking}
     /// <summary>
     /// all possible states of character
     /// </summary>
@@ -39,27 +39,32 @@ public class Movement : MonoBehaviour
 	// Use this for initialization
 	void Start () {
         currentState = States.freeRoam;
+
         runSpeed = 6;
         walkSpeed = runSpeed / 2;
         lockOnRange = 10;
-        cameraTurnSpeed = 20;
         jumpHeight = 5;
+        cameraTurnSpeed = 20;
+
         camToPlayer = transform.position - Camera.main.transform.position;
+
         myhealth = gameObject.AddComponent<Health>();
         possibleTargets = new List<Enemy>();
-        gameObject.AddComponent<Rigidbody>();
-        rb = gameObject.GetComponent<Rigidbody>();
+        //rb = gameObject.GetComponent<Rigidbody>();
         animate = GetComponent<Animator>();
     }
 	
 	// Update is called once per frame
 	void Update () {
-        
-        
+            
         switch (currentState)
         {
             case States.freeRoam:
-                animate.SetBool("IsMoving", true);
+                if (isIdle())
+                    animate.SetBool("IsMoving", false);
+                else
+                    animate.SetBool("IsMoving", true);
+
                 if (shouldMoveForward())
                     moveForward();
                 if (shouldTurnLeft())
@@ -68,7 +73,16 @@ public class Movement : MonoBehaviour
                     turnRight();
                 if (shouldTurnAround())
                     turnAround();
-                if(shouldToggleLockOn())
+
+                if (shouldMeleeAttack())
+                    meleeAttack();
+                if (shouldRangedAttack())
+                    rangedAttack();
+
+                //if (shouldJump())
+                //    jump();
+
+                if (shouldToggleLockOn())
                 {
                     aquireTargets();
                     if (canLockOn())
@@ -78,6 +92,12 @@ public class Movement : MonoBehaviour
 
             case States.lockedOn:
                 maintainLock();
+
+                if (isIdle())
+                    animate.SetBool("IsMoving", false);
+                else
+                    animate.SetBool("IsMoving", true);
+
                 if (shouldMoveForward())
                     approach();
                 if (shouldTurnLeft())
@@ -86,12 +106,28 @@ public class Movement : MonoBehaviour
                     strafeRight();
                 if (shouldTurnAround())
                     moveBack();
+                
                 if (shouldToggleLockOn())
                     breakLock();
+
                 if (shouldMeleeAttack())
                     meleeAttack();
                 if (shouldRangedAttack())
                     rangedAttack();
+                break;
+
+            case States.inAir:
+                
+                break;
+
+            case States.attacking:
+                if (animate.GetBool("IsAttacking")==false)
+                {
+                    if (target)
+                        currentState = States.lockedOn;
+                    else
+                        currentState = States.freeRoam;
+                }
                 break;
         }
 
@@ -127,7 +163,7 @@ public class Movement : MonoBehaviour
     {
         direction.x = Camera.main.transform.forward.x;
         direction.z = Camera.main.transform.forward.z;
-        direction.y = transform.position.y; ;
+        direction.y = transform.forward.y; ;
 
         if (transform.forward != direction)
             transform.forward = direction;
@@ -150,7 +186,7 @@ public class Movement : MonoBehaviour
     {
         direction.x = -Camera.main.transform.right.x;
         direction.z = -Camera.main.transform.right.z;
-        direction.y = transform.position.y; ;
+        direction.y = -transform.right.y; ;
 
         if (transform.forward != direction)
             transform.forward = direction;
@@ -173,7 +209,7 @@ public class Movement : MonoBehaviour
     {
         direction.x = Camera.main.transform.right.x;
         direction.z = Camera.main.transform.right.z;
-        direction.y = transform.position.y; ;
+        direction.y = transform.right.y; ;
 
         if (transform.forward != direction)
             transform.forward = direction;
@@ -196,7 +232,7 @@ public class Movement : MonoBehaviour
     {
         direction.x = -Camera.main.transform.forward.x;
         direction.z = -Camera.main.transform.forward.z;
-        direction.y = transform.position.y; ;
+        direction.y = -transform.forward.y; ;
 
         if (transform.forward != direction)
             transform.forward = direction;
@@ -217,6 +253,7 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void jump()
     {
+        currentState = States.inAir;
         rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
     }
 
@@ -229,7 +266,7 @@ public class Movement : MonoBehaviour
     {
         foreach (Enemy e in Collections.targets)
         {
-            if (Vector3.Dot(Camera.main.transform.forward, e.transform.position) > 0)
+            if (Vector3.Dot(e.transform.position - Camera.main.transform.position, Camera.main.transform.forward) > 0)
             {
                 if ((e.transform.position - transform.position).magnitude <= lockOnRange)
                 {
@@ -269,7 +306,7 @@ public class Movement : MonoBehaviour
         {
             target = possibleTargets[index];
         }
-        catch(ArgumentOutOfRangeException e)
+        catch(ArgumentOutOfRangeException)
         {
             if (index == -1)
                 target = possibleTargets[possibleTargets.Count-1];
@@ -316,6 +353,7 @@ public class Movement : MonoBehaviour
         target.setIsTargeted(false);
         target = null;
         possibleTargets.Clear();
+        currentState = States.freeRoam;
     }
 
     private void approach()
@@ -356,6 +394,9 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void meleeAttack()
     {
+        animate.SetBool("IsAttacking", true);
+        currentState = States.attacking;
+        
         if (target)
             target.SendMessage("damage", -10);
     }
