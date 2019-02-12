@@ -50,7 +50,7 @@ public class Movement : MonoBehaviour
 
         myhealth = gameObject.AddComponent<Health>();
         possibleTargets = new List<Enemy>();
-        //rb = gameObject.GetComponent<Rigidbody>();
+        rb = gameObject.GetComponent<Rigidbody>();
         animate = GetComponent<Animator>();
     }
 	
@@ -79,8 +79,8 @@ public class Movement : MonoBehaviour
                 if (shouldRangedAttack())
                     rangedAttack();
 
-                //if (shouldJump())
-                //    jump();
+                if (shouldJump())
+                    jump();
 
                 if (shouldToggleLockOn())
                 {
@@ -99,14 +99,14 @@ public class Movement : MonoBehaviour
                     animate.SetBool("IsMoving", true);
 
                 if (shouldMoveForward())
-                    approach();
+                    moveForward();
                 if (shouldTurnLeft())
-                    strafeLeft();
+                    turnLeft();
                 if (shouldTurnRight())
-                    strafeRight();
+                    turnRight();
                 if (shouldTurnAround())
-                    moveBack();
-                
+                    turnAround();
+
                 if (shouldToggleLockOn())
                     breakLock();
 
@@ -117,6 +117,23 @@ public class Movement : MonoBehaviour
                 break;
 
             case States.inAir:
+                if (shouldMoveForward())
+                    approach();
+                if (shouldTurnLeft())
+                    strafeLeft();
+                if (shouldTurnRight())
+                    strafeRight();
+                if (shouldTurnAround())
+                    moveBack();
+
+                Vector3 dwn = Vector3.down;
+                Debug.DrawRay(transform.position, dwn * jumpHeight, Color.white, 1);
+                RaycastHit info;
+                if (Physics.Raycast(transform.position, dwn * jumpHeight, out info, 1))
+                {
+                    animate.SetBool("IsAirborne", false);
+                    currentState = States.freeRoam;
+                }
                 
                 break;
 
@@ -130,6 +147,10 @@ public class Movement : MonoBehaviour
                 }
                 break;
         }
+
+            Debug.Log(currentState);
+           
+
 
             Camera.main.transform.position = transform.position - camToPlayer;
             Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
@@ -254,6 +275,7 @@ public class Movement : MonoBehaviour
     private void jump()
     {
         currentState = States.inAir;
+        animate.SetBool("IsAirborne", false);
         rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
     }
 
@@ -351,6 +373,7 @@ public class Movement : MonoBehaviour
     private void breakLock()
     {
         target.setIsTargeted(false);
+        animate.SetBool("IsLockedOn", false);
         target = null;
         possibleTargets.Clear();
         currentState = States.freeRoam;
