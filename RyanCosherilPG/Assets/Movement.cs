@@ -27,7 +27,7 @@ public class Movement : MonoBehaviour
     /// speed at which camera turns
     /// </summary>
     float cameraTurnSpeed;
-    enum States {lockedOn, freeRoam, inAir, attacking}
+    enum States {lockedOn, freeRoam, inAir, attacking, dead}
     /// <summary>
     /// all possible states of character
     /// </summary>
@@ -81,6 +81,12 @@ public class Movement : MonoBehaviour
 
                 if (shouldJump())
                     startJump();
+
+                if(shouldInteract())
+                {
+                    if (canInteract())
+                        interact(canInteract());
+                }
 
                 if (shouldToggleLockOn())
                 {
@@ -137,14 +143,10 @@ public class Movement : MonoBehaviour
                 }
                 break;
         }
-
-            Debug.Log(currentState);
            
-
-
-            Camera.main.transform.position = transform.position - camToPlayer;
-            Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
-            camToPlayer = transform.position - Camera.main.transform.position;
+        Camera.main.transform.position = transform.position - camToPlayer;
+        Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
+        camToPlayer = transform.position - Camera.main.transform.position;
         
     }
 
@@ -177,7 +179,7 @@ public class Movement : MonoBehaviour
         direction.y = transform.forward.y; ;
 
         if (transform.forward != direction)
-            transform.forward = direction;
+            transform.forward += direction;
 
         transform.position += runSpeed * direction * Time.deltaTime;
     }
@@ -200,7 +202,7 @@ public class Movement : MonoBehaviour
         direction.y = -transform.right.y; ;
 
         if (transform.forward != direction)
-            transform.forward = direction;
+            transform.forward += direction;
 
         transform.position += runSpeed * direction * Time.deltaTime;
     }
@@ -223,7 +225,7 @@ public class Movement : MonoBehaviour
         direction.y = transform.right.y; ;
 
         if (transform.forward != direction)
-            transform.forward = direction;
+            transform.forward += direction;
 
         transform.position += runSpeed * direction * Time.deltaTime;
     }
@@ -246,7 +248,7 @@ public class Movement : MonoBehaviour
         direction.y = -transform.forward.y; ;
 
         if (transform.forward != direction)
-            transform.forward = direction;
+            transform.forward += direction;
 
         transform.position += runSpeed * direction * Time.deltaTime;
     }
@@ -278,18 +280,9 @@ public class Movement : MonoBehaviour
     {
         if (currentState == States.inAir)
         {
-            //Debug.DrawRay(transform.position, Vector3.down, Color.white, 1);
-            //RaycastHit info;
-            //if (Physics.Raycast(transform.position, Vector3.down, out info, 1))
-            //{
-
-            //}
-
             animate.SetBool("IsAirborne", false);
             currentState = States.freeRoam;
         }
-
-        
     }
 
     private bool shouldToggleLockOn()
@@ -377,10 +370,6 @@ public class Movement : MonoBehaviour
 
         if ((target.transform.position - transform.position).magnitude > lockOnRange+1)
             breakLock();
-
-        //Camera.main.transform.LookAt(target.transform.position);
-        //Camera.main.transform.forward = ;
-        //Camera.main.transform.position = transform.position - camToPlayer;
     }
 
     private void breakLock()
@@ -473,17 +462,29 @@ public class Movement : MonoBehaviour
         SceneManager.LoadScene(loadedLevel.buildIndex);
     }
 
+    private bool shouldInteract()
+    {
+        return Input.GetKeyDown("e");
+    }
+
     /// <summary>
     /// checks if any interactable objects can be interacted with
     /// </summary>
-    private bool canInteract()
+    private GameObject canInteract()
     {
-        throw new System.NotImplementedException();
+        Debug.DrawRay(transform.position, transform.forward, Color.red, 1);
+        RaycastHit info;
+        if (Physics.Raycast(transform.position, transform.forward, out info, 1))
+        {
+            return info.transform.gameObject;
+        }
+        else
+            return null;
     }
 
     /// <param name="interactedObject">object interacted with</param>
     private void interact(GameObject interactedObject)
     {
-        throw new System.NotImplementedException();
+        interactedObject.SendMessage("interacted");
     }
 }
