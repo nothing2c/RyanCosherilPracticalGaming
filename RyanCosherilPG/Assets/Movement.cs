@@ -80,7 +80,7 @@ public class Movement : MonoBehaviour
                     rangedAttack();
 
                 if (shouldJump())
-                    jump();
+                    startJump();
 
                 if (shouldToggleLockOn())
                 {
@@ -99,13 +99,13 @@ public class Movement : MonoBehaviour
                     animate.SetBool("IsMoving", true);
 
                 if (shouldMoveForward())
-                    moveForward();
+                    approach();
                 if (shouldTurnLeft())
-                    turnLeft();
+                    strafeLeft();
                 if (shouldTurnRight())
-                    turnRight();
+                    strafeRight();
                 if (shouldTurnAround())
-                    turnAround();
+                    moveBack();
 
                 if (shouldToggleLockOn())
                     breakLock();
@@ -118,23 +118,13 @@ public class Movement : MonoBehaviour
 
             case States.inAir:
                 if (shouldMoveForward())
-                    approach();
+                    moveForward();
                 if (shouldTurnLeft())
-                    strafeLeft();
+                    turnLeft();
                 if (shouldTurnRight())
-                    strafeRight();
+                    turnRight();
                 if (shouldTurnAround())
-                    moveBack();
-
-                Vector3 dwn = Vector3.down;
-                Debug.DrawRay(transform.position, dwn * jumpHeight, Color.white, 1);
-                RaycastHit info;
-                if (Physics.Raycast(transform.position, dwn * jumpHeight, out info, 1))
-                {
-                    animate.SetBool("IsAirborne", false);
-                    currentState = States.freeRoam;
-                }
-                
+                    turnAround();
                 break;
 
             case States.attacking:
@@ -269,14 +259,37 @@ public class Movement : MonoBehaviour
         return (Input.GetKeyUp(KeyCode.Space));
     }
 
+    private void startJump()
+    {
+        animate.SetBool("IsAirborne", true);
+    }
+
     /// <summary>
     /// makes the character jump
     /// </summary>
+    /// 
     private void jump()
     {
         currentState = States.inAir;
-        animate.SetBool("IsAirborne", false);
         rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (currentState == States.inAir)
+        {
+            //Debug.DrawRay(transform.position, Vector3.down, Color.white, 1);
+            //RaycastHit info;
+            //if (Physics.Raycast(transform.position, Vector3.down, out info, 1))
+            //{
+
+            //}
+
+            animate.SetBool("IsAirborne", false);
+            currentState = States.freeRoam;
+        }
+
+        
     }
 
     private bool shouldToggleLockOn()
