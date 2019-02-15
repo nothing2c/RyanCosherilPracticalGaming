@@ -423,7 +423,7 @@ public class Movement : MonoBehaviour
         currentState = States.attacking;
         
         if (target)
-            target.SendMessage("damage", -10);
+            target.SendMessage("damage", -40);
     }
 
     private bool shouldRangedAttack()

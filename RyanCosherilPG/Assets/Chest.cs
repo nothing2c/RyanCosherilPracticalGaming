@@ -7,8 +7,10 @@ public class Chest : MonoBehaviour {
 
     int gold;
     bool isInteractable;
+    Animation open;
     // Use this for initialization
     void Start () {
+        open = gameObject.GetComponent<Animation>();
         gold = (int)(Random.value * 100);
         isInteractable = true;
 	}
@@ -23,6 +25,7 @@ public class Chest : MonoBehaviour {
         if(isInteractable)
         {
             GoldDisplayUpdater text = GameObject.Find("GoldDisplay").GetComponent<GoldDisplayUpdater>();
+            open.Play("chestOpen");
             text.SendMessage("updateText", gold);
             isInteractable = false;
         }

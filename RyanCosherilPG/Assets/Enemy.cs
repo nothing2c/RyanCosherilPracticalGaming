@@ -57,13 +57,19 @@ public class Enemy : MonoBehaviour {
         {
             GameObject.Find("Player").SendMessage("breakLock");
             death();
-        }
-            
+        }       
     }
 
     void death()
     {
+        GameObject goldDrop = Resources.Load<GameObject>("prefabs/goldCoins");
         Collections.targets.Remove(this);
+        Instantiate(goldDrop, gameObject.transform.position, goldDrop.transform.rotation);
         Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        
     }
 }
