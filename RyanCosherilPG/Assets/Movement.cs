@@ -421,9 +421,6 @@ public class Movement : MonoBehaviour
     {
         animate.SetBool("IsAttacking", true);
         currentState = States.attacking;
-        
-        if (target)
-            target.SendMessage("damage", -40);
     }
 
     private bool shouldRangedAttack()
