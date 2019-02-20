@@ -55,7 +55,7 @@ public class Enemy : MonoBehaviour {
 
         if (enemyHealth.currentHealth <= 0)
         {
-            GameObject.Find("Player").SendMessage("breakLock");
+            GameObject.Find("player").SendMessage("breakLock");
             death();
         }       
     }

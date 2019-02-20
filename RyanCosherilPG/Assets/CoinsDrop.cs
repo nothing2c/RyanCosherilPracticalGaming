@@ -17,7 +17,7 @@ public class CoinsDrop : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider == GameObject.Find("Player").GetComponent<BoxCollider>())
+        if(collision.collider == GameObject.Find("player").GetComponent<BoxCollider>())
         {
             GoldDisplayUpdater text = GameObject.Find("GoldDisplay").GetComponent<GoldDisplayUpdater>();
             text.SendMessage("updateText", value);

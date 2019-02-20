@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 54158029660625654}
   - component: {fileID: 114204165617789100}
   m_Layer: 0
-  m_Name: samuzai
+  m_Name: player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -806,6 +806,8 @@ GameObject:
   m_Component:
   - component: {fileID: 400094}
   - component: {fileID: 13700000}
+  - component: {fileID: 136101539100178220}
+  - component: {fileID: 114247428671895456}
   m_Layer: 0
   m_Name: Cylinder001
   m_TagString: Untagged
@@ -1598,8 +1600,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 400202}
-  - component: {fileID: 65203375277665386}
-  - component: {fileID: 114230467620897832}
   m_Layer: 0
   m_Name: Bip001
   m_TagString: Untagged
@@ -2094,7 +2094,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100054}
-  m_LocalRotation: {x: -0.16629401, y: 0.6972786, z: 0.6930346, w: -0.07649874}
+  m_LocalRotation: {x: -0.166294, y: 0.69727856, z: 0.6930345, w: -0.07649873}
   m_LocalPosition: {x: -0.118017726, y: 0.1280959, z: 0.029750165}
   m_LocalScale: {x: 1.0000002, y: 1.0000002, z: 1.0000002}
   m_Children:
@@ -3181,6 +3181,7 @@ SkinnedMeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -3196,6 +3197,7 @@ SkinnedMeshRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -3229,6 +3231,7 @@ SkinnedMeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -3245,6 +3248,7 @@ SkinnedMeshRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -3374,18 +3378,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!65 &65203375277665386
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100202}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 2, y: 0.1, z: 0.1}
-  m_Center: {x: -1, y: 0, z: 0}
 --- !u!65 &65438896901906342
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -3428,12 +3420,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attack: 0
   health: 0
---- !u!114 &114230467620897832
+--- !u!114 &114247428671895456
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100202}
+  m_GameObject: {fileID: 100094}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 102e866460bcc074bb3d5eab65db1df0, type: 3}
@@ -3451,3 +3443,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBar: {fileID: 0}
+--- !u!136 &136101539100178220
+CapsuleCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100094}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 0
+  m_Radius: 0.13
+  m_Height: 1.46
+  m_Direction: 2
+  m_Center: {x: 0.015858682, y: -0.009841456, z: -0.0058081225}
