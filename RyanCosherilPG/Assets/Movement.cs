@@ -375,7 +375,6 @@ public class Movement : MonoBehaviour
     private void breakLock()
     {
         target.setIsTargeted(false);
-        animate.applyRootMotion = false;
         animate.SetBool("IsLockedOn", false);
         target = null;
         possibleTargets.Clear();
