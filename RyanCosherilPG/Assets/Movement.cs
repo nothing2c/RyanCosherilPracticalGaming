@@ -134,6 +134,12 @@ public class Movement : MonoBehaviour
                 break;
 
             case States.attacking:
+
+                if(shouldMeleeAttack())
+                {
+
+                }
+
                 if (animate.GetBool("IsAttacking")==false)
                 {
                     if (target)
