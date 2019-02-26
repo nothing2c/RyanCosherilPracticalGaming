@@ -2,7 +2,7 @@ fileFormatVersion: 2
 guid: e156495aa9aa3424d85dac51d5fdbd21
 timeCreated: 18446744011573954816
 ModelImporter:
-  serializedVersion: 22
+  serializedVersion: 21
   fileIDToRecycleName:
     100000: Bip001
     100002: Bip001 Footsteps
@@ -196,27 +196,10 @@ ModelImporter:
     11100000: //RootNode
     13700000: Cylinder001
     13700002: Plane007
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: 13 - Default
-    second: {fileID: 2100000, guid: 01c8458924acc9141adb65e1e542c748, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: 19 - Default1
-    second: {fileID: 2100000, guid: 4554227503f4c834fb0b922370508cc1, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: 20 - Default
-    second: {fileID: 2100000, guid: da2b74ac11ca6a24e9f7e299a829ac85, type: 2}
   materials:
     importMaterials: 1
     materialName: 3
     materialSearch: 1
-    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -229,7 +212,6 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    importAnimatedCustomProperties: 0
     animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -389,7 +371,7 @@ ModelImporter:
       name: AttackFollow
       takeName: Samurai_Motion_120609(2)
       firstFrame: 253
-      lastFrame: 280
+      lastFrame: 275
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -398,7 +380,7 @@ ModelImporter:
       hasAdditiveReferencePose: 0
       loopTime: 0
       loopBlend: 0
-      loopBlendOrientation: 0
+      loopBlendOrientation: 1
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
       keepOriginalOrientation: 0

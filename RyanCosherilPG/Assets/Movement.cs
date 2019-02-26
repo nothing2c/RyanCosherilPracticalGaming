@@ -137,7 +137,7 @@ public class Movement : MonoBehaviour
 
                 if(shouldMeleeAttack())
                 {
-
+                    animate.SetBool("AttackQued", true);
                 }
 
                 if (animate.GetBool("IsAttacking")==false)
