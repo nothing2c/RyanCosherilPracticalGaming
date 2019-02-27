@@ -17,7 +17,6 @@ public class MeleeWeapon : MonoBehaviour {
             collider.enabled = true;
         else
             collider.enabled = false;
-
     }
 
     private void OnTriggerEnter(Collider collision)

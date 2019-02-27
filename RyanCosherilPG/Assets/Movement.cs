@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class Movement : MonoBehaviour
 {
+    string currentWeapon;
     Animator animate;
     /// <summary>
     /// direction character will move
@@ -40,6 +41,7 @@ public class Movement : MonoBehaviour
 	void Start () {
         currentState = States.freeRoam;
 
+        currentWeapon = "melee";
         runSpeed = 6;
         walkSpeed = runSpeed / 2;
         lockOnRange = 10;
@@ -148,6 +150,11 @@ public class Movement : MonoBehaviour
                         currentState = States.freeRoam;
                 }
                 break;
+        }
+
+        if(Input.GetKeyDown("p"))
+        {
+            currentWeapon = GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("melee");
         }
            
         Camera.main.transform.position = transform.position - camToPlayer;
