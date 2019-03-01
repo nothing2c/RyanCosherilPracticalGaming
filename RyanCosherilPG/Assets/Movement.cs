@@ -41,7 +41,7 @@ public class Movement : MonoBehaviour
 	void Start () {
         currentState = States.freeRoam;
 
-        currentWeapon = "melee";
+        currentWeapon = GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("range");
         runSpeed = 6;
         walkSpeed = runSpeed / 2;
         lockOnRange = 10;
@@ -154,7 +154,11 @@ public class Movement : MonoBehaviour
 
         if(Input.GetKeyDown("p"))
         {
-            currentWeapon = GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("melee");
+            myhealth.adjustHealth(-10);
+            healthBar.value = myhealth.calculateHealth();
+
+            if (myhealth.currentHealth <= 0)
+                death();
         }
            
         Camera.main.transform.position = transform.position - camToPlayer;
@@ -432,9 +436,17 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void meleeAttack()
     {
-        animate.applyRootMotion = true;
-        animate.SetBool("IsAttacking", true);
-        currentState = States.attacking;
+        if(!currentWeapon.Equals("melee"))
+        {
+            currentWeapon = GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("range");
+        }
+            
+        else
+        {
+            animate.applyRootMotion = true;
+            animate.SetBool("IsAttacking", true);
+            currentState = States.attacking;
+        }
     }
 
     private bool shouldRangedAttack()
@@ -447,11 +459,15 @@ public class Movement : MonoBehaviour
     /// </summary>
     private void rangedAttack()
     {
-        myhealth.adjustHealth(-10);
-        healthBar.value = myhealth.calculateHealth();
+        if (!currentWeapon.Equals("range"))
+        {
+            currentWeapon = GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("melee");
+        }
 
-        if (myhealth.currentHealth <= 0)
-            death();
+        else
+        {
+            GameObject.Instantiate(Resources.Load("Low-Poly Weapons/Prefabs/Arrow_Regular"),transform.position + Vector3.up,transform.rotation);
+        }
     }
 
     void death()

@@ -14,14 +14,19 @@ public class WeaponSwap : MonoBehaviour {
 		
 	}
 
-    public string swapWeapon(string weaponType)
+    public string swapWeapon(string currentWeaponType)
     {
-        switch(weaponType)
+        switch(currentWeaponType)
         {
             case "melee":
-                gameObject.GetComponentInChildren<GameObject>().SetActive(false);
+                //gameObject.GetComponentInChildren<GameObject>().SetActive(false);
+                transform.GetChild(0).gameObject.SetActive(false);
+                transform.GetChild(1).gameObject.SetActive(true);
                 return "range";
-                break;
+            case "range":
+                transform.GetChild(1).gameObject.SetActive(false);
+                transform.GetChild(0).gameObject.SetActive(true);
+                return "melee";
         }
 
         return "";
