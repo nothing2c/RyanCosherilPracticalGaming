@@ -5,10 +5,13 @@ using UnityEngine;
 public class MeleeWeapon : MonoBehaviour {
 
     CapsuleCollider collider;
+    bool equiped;
+    float damage;
 	// Use this for initialization
 	void Start () {
         collider = gameObject.GetComponent<CapsuleCollider>();
         collider.enabled = false;
+        damage = 40;
 	}
 	
 	// Update is called once per frame
@@ -24,7 +27,7 @@ public class MeleeWeapon : MonoBehaviour {
         if (collision.gameObject.GetComponent<Enemy>())
         {
             Debug.Log("Attacking");
-            collision.gameObject.SendMessage("damage", -40f);
+            collision.gameObject.SendMessage("damage", damage);
         }       
     }
 }

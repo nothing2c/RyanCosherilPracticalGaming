@@ -50,7 +50,7 @@ public class Enemy : MonoBehaviour {
 
     public void damage(float damage)
     {
-        enemyHealth.adjustHealth(damage);
+        enemyHealth.adjustHealth(-damage);
         healthBar.value = enemyHealth.calculateHealth();
 
         if (enemyHealth.currentHealth <= 0)

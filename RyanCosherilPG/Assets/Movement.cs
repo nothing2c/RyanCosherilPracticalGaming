@@ -28,7 +28,7 @@ public class Movement : MonoBehaviour
     /// speed at which camera turns
     /// </summary>
     float cameraTurnSpeed;
-    enum States {lockedOn, freeRoam, inAir, attacking, dead}
+    enum States {lockedOn, freeRoam, inAir, attacking, shooting, dead}
     /// <summary>
     /// all possible states of character
     /// </summary>
@@ -36,6 +36,10 @@ public class Movement : MonoBehaviour
     Health myhealth;
     public Slider healthBar;
     Rigidbody rb;
+
+    float minShotForce;
+    float maxShotForce;
+    float shotForce;
 
 	// Use this for initialization
 	void Start () {
@@ -54,6 +58,10 @@ public class Movement : MonoBehaviour
         possibleTargets = new List<Enemy>();
         rb = gameObject.GetComponent<Rigidbody>();
         animate = GetComponent<Animator>();
+
+        minShotForce = 10;
+        maxShotForce = 100;
+        shotForce = 0;
     }
 	
 	// Update is called once per frame
@@ -150,6 +158,33 @@ public class Movement : MonoBehaviour
                         currentState = States.freeRoam;
                 }
                 break;
+
+            case States.shooting:
+                if(Input.GetMouseButton(1))
+                {
+                    if(shotForce < maxShotForce)
+                    {
+                        shotForce++;
+                    }
+                }
+
+                else
+                {
+                    if (shotForce < minShotForce)
+                        shotForce = minShotForce;
+
+                    Arrow shot = Instantiate(Resources.Load<GameObject>("Low-Poly Weapons/Prefabs/Arrow_Regular"), transform.position + Vector3.up, transform.rotation).GetComponent<Arrow>();
+                    shot.shotSpeed = shotForce;
+
+                    shotForce = 0;
+
+                    if (target)
+                        currentState = States.lockedOn;
+                    else
+                        currentState = States.freeRoam;
+                }
+                break;
+
         }
 
         if(Input.GetKeyDown("p"))
@@ -464,9 +499,9 @@ public class Movement : MonoBehaviour
             currentWeapon = GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("melee");
         }
 
-        else
+        else if(Input.GetMouseButton(1))
         {
-            GameObject.Instantiate(Resources.Load("Low-Poly Weapons/Prefabs/Arrow_Regular"),transform.position + Vector3.up,transform.rotation);
+            currentState = States.shooting;
         }
     }
 
@@ -512,6 +547,6 @@ public class Movement : MonoBehaviour
     /// <param name="interactedObject">object interacted with</param>
     private void interact(GameObject interactedObject)
     {
-        interactedObject.SendMessage("interacted");
+        interactedObject.SendMessage("interact");
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Chest : MonoBehaviour {
+public class Chest : MonoBehaviour, Interactable {
 
     int gold;
     bool isInteractable;
@@ -20,9 +20,9 @@ public class Chest : MonoBehaviour {
 
 	}
 
-    public void interacted()
+    public void interact()
     {
-        if(isInteractable)
+        if (isInteractable)
         {
             GoldDisplayUpdater text = GameObject.Find("GoldDisplay").GetComponent<GoldDisplayUpdater>();
             open.Play("chestOpen");
