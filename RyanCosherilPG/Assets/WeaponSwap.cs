@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class WeaponSwap : MonoBehaviour {
 
+    GameObject meleeWeapon;
+    GameObject rangedWeapon;
+
 	// Use this for initialization
 	void Start () {
-		
-	}
+        meleeWeapon = transform.GetChild(0).gameObject;
+        rangedWeapon = transform.GetChild(1).gameObject;
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -20,19 +24,24 @@ public class WeaponSwap : MonoBehaviour {
         {
             case "melee":
                 //gameObject.GetComponentInChildren<GameObject>().SetActive(false);
-                transform.GetChild(0).gameObject.SetActive(false);
-                transform.GetChild(1).gameObject.SetActive(true);
+                meleeWeapon.SetActive(false);
+                rangedWeapon.SetActive(true);
                 return "range";
             case "range":
-                transform.GetChild(1).gameObject.SetActive(false);
-                transform.GetChild(0).gameObject.SetActive(true);
+                rangedWeapon.SetActive(false);
+                meleeWeapon.SetActive(true);
                 return "melee";
         }
 
         return "";
-        //foreach(Transform child in transform)
-        //{
-            
-        //}
+    }
+
+    public void equipWeapon(string newWeaponPath, string weaponType)
+    {
+        if(weaponType.Equals("melee"))
+        {
+            Destroy(meleeWeapon);
+            meleeWeapon = Instantiate((GameObject)Resources.Load(newWeaponPath), transform);
+        }
     }
 }

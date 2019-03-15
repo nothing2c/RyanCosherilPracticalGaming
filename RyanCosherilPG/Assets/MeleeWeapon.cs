@@ -5,7 +5,6 @@ using UnityEngine;
 public class MeleeWeapon : MonoBehaviour {
 
     CapsuleCollider collider;
-    bool equiped;
     float damage;
 	// Use this for initialization
 	void Start () {

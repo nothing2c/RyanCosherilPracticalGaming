@@ -7,7 +7,12 @@ using UnityEngine.SceneManagement;
 
 public class Movement : MonoBehaviour
 {
+
+    GameObject weapon;
+
     string currentWeapon;
+    MeleeWeapon mWeapon;
+    RangedWeapon rWeapon;
     Animator animate;
     /// <summary>
     /// direction character will move
@@ -43,14 +48,21 @@ public class Movement : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
+        weapon = GameObject.Find("Weapon");
+
         currentState = States.freeRoam;
 
-        currentWeapon = GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("range");
+        currentWeapon = "melee";//GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("range");
+
+        rWeapon = gameObject.GetComponentInChildren<RangedWeapon>();
+        mWeapon = gameObject.GetComponentInChildren<MeleeWeapon>();
         runSpeed = 6;
         walkSpeed = runSpeed / 2;
         lockOnRange = 10;
         jumpHeight = 5;
         cameraTurnSpeed = 20;
+
+
 
         camToPlayer = transform.position - Camera.main.transform.position;
 
@@ -62,10 +74,26 @@ public class Movement : MonoBehaviour
         minShotForce = 10;
         maxShotForce = 100;
         shotForce = 0;
+
+        if (rWeapon)
+            Debug.Log("Ranged");
+
+        if (mWeapon)
+            Debug.Log("Melee");
+
+        rWeapon.gameObject.SetActive(false);
     }
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (Input.GetKeyDown("i"))
+        {
+            if(currentWeapon.Equals("melee"))
+            {
+                weapon.GetComponent<WeaponSwap>().equipWeapon("Low-Poly Weapons/Prefabs/Sword", "melee");
+            }
+        }
             
         switch (currentState)
         {
@@ -473,7 +501,7 @@ public class Movement : MonoBehaviour
     {
         if(!currentWeapon.Equals("melee"))
         {
-            currentWeapon = GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("range");
+            currentWeapon = weapon.GetComponent<WeaponSwap>().swapWeapon("range");
         }
             
         else
@@ -496,7 +524,7 @@ public class Movement : MonoBehaviour
     {
         if (!currentWeapon.Equals("range"))
         {
-            currentWeapon = GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("melee");
+            currentWeapon = weapon.GetComponent<WeaponSwap>().swapWeapon("melee");
         }
 
         else if(Input.GetMouseButton(1))
