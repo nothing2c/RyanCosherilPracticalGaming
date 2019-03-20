@@ -13,4 +13,9 @@ public class RangedWeapon : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    public void fire(float shotForce)
+    {
+
+    }
 }

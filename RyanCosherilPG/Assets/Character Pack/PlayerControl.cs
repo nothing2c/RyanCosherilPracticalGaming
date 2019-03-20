@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class PlayerControl : MonoBehaviour
 {
-
     GameObject weapon;
 
     string currentWeapon;
@@ -40,6 +39,7 @@ public class PlayerControl : MonoBehaviour
     States currentState;
     Health myhealth;
     public Slider healthBar;
+    public Slider powerBar;
     Rigidbody rb;
 
     float minShotForce;
@@ -76,6 +76,9 @@ public class PlayerControl : MonoBehaviour
         shotForce = 0;
 
         rWeapon.gameObject.SetActive(false);
+
+        powerBar.gameObject.SetActive(false);
+        powerBar.maxValue = maxShotForce;
     }
 	
 	// Update is called once per frame
@@ -186,7 +189,8 @@ public class PlayerControl : MonoBehaviour
                 {
                     if(shotForce < maxShotForce)
                     {
-                        shotForce++;
+                        shotForce += (maxShotForce/3) * Time.deltaTime;
+                        powerBar.value = shotForce;
                     }
                 }
 
@@ -196,9 +200,11 @@ public class PlayerControl : MonoBehaviour
                         shotForce = minShotForce;
 
                     Arrow shot = Instantiate(Resources.Load<GameObject>("Low-Poly Weapons/Prefabs/Arrow_Regular"), transform.position + Vector3.up, transform.rotation).GetComponent<Arrow>();
-                    shot.shotSpeed = shotForce;
+                    shot.shotForce = shotForce;
 
                     shotForce = 0;
+
+                    powerBar.gameObject.SetActive(false);
 
                     if (target)
                         currentState = States.lockedOn;
@@ -524,6 +530,7 @@ public class PlayerControl : MonoBehaviour
         else if(Input.GetMouseButton(1))
         {
             currentState = States.shooting;
+            powerBar.gameObject.SetActive(true);
         }
     }
 

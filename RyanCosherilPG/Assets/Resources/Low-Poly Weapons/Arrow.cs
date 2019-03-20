@@ -5,23 +5,32 @@ using UnityEngine;
 public class Arrow : MonoBehaviour {
 
     int damage;
+    bool isCollided;
     Enemy target;
     float survivalTime;
     Rigidbody rb;
-    public float shotSpeed;
+    public float shotForce;
+    BoxCollider col;
 
 	// Use this for initialization
 	void Start () {
         damage = 20;
         rb = gameObject.GetComponent<Rigidbody>();
         survivalTime = 3;
+        isCollided = true;
+        col = gameObject.GetComponent<BoxCollider>();
 
-        rb.AddForce(transform.forward * shotSpeed, ForceMode.Impulse);
+        rb.AddForce(transform.forward * shotForce, ForceMode.Impulse);
     }
 	
 	// Update is called once per frame
 	void Update () {
-        transform.forward = Vector3.Slerp(transform.forward, rb.velocity.normalized, Time.deltaTime);
+        if(!isCollided)
+        {
+            //transform.forward = Vector3.Slerp(transform.forward, rb.velocity.normalized, Time.deltaTime);
+            
+        }
+
         arrowTimer();
     }
 
@@ -42,7 +51,11 @@ public class Arrow : MonoBehaviour {
         if(target)
         {
             target.damage(damage);
-            Destroy(gameObject);
+            transform.parent = (other.transform);
+            Destroy(rb);
+            isCollided = true;
         }
+
+        
     }
 }
