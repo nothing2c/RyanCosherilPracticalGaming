@@ -21,11 +21,12 @@ public class MeleeWeapon : MonoBehaviour {
             collider.enabled = false;
     }
 
-    private void OnTriggerEnter(Collider collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.GetComponent<Enemy>())
+        if (other.gameObject.GetComponent<Health>())
         {
-            collision.gameObject.SendMessage("damage", damage);
+            other.gameObject.SendMessage("damage", damage);
+            Debug.Log("hello");
         }       
     }
 }

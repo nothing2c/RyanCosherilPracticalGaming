@@ -7,12 +7,12 @@ using UnityEngine.SceneManagement;
 
 public class PlayerControl : MonoBehaviour
 {
-    GameObject weapon;
-
+    public GameObject weapon;
     string currentWeapon;
     MeleeWeapon mWeapon;
     RangedWeapon rWeapon;
     Animator animate;
+
     /// <summary>
     /// direction character will move
     /// </summary>
@@ -42,17 +42,14 @@ public class PlayerControl : MonoBehaviour
     public Slider powerBar;
     Rigidbody rb;
 
-    float minShotForce;
-    float maxShotForce;
     float shotForce;
 
 	// Use this for initialization
 	void Start () {
-        weapon = GameObject.Find("Weapon");
 
         currentState = States.freeRoam;
 
-        currentWeapon = "melee";//GameObject.Find("Weapon").GetComponent<WeaponSwap>().swapWeapon("range");
+        currentWeapon = "melee";
 
         rWeapon = gameObject.GetComponentInChildren<RangedWeapon>();
         mWeapon = gameObject.GetComponentInChildren<MeleeWeapon>();
@@ -62,8 +59,6 @@ public class PlayerControl : MonoBehaviour
         jumpHeight = 5;
         cameraTurnSpeed = 20;
 
-
-
         camToPlayer = transform.position - Camera.main.transform.position;
 
         myhealth = gameObject.AddComponent<Health>();
@@ -71,14 +66,12 @@ public class PlayerControl : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody>();
         animate = GetComponent<Animator>();
 
-        minShotForce = 10;
-        maxShotForce = 100;
         shotForce = 0;
 
         rWeapon.gameObject.SetActive(false);
 
         powerBar.gameObject.SetActive(false);
-        powerBar.maxValue = maxShotForce;
+        powerBar.maxValue = rWeapon.maxPower;
     }
 	
 	// Update is called once per frame
@@ -166,6 +159,16 @@ public class PlayerControl : MonoBehaviour
                     turnRight();
                 if (shouldTurnAround())
                     turnAround();
+
+                if (rb.velocity.y < 0)
+                {
+                    RaycastHit info;
+                    if (Physics.Raycast(transform.position, -transform.up, out info, 1))
+                    {
+                        currentState = States.freeRoam;
+                        animate.SetBool("IsAirborne", false);
+                    }
+                }
                 break;
 
             case States.attacking:
@@ -187,20 +190,19 @@ public class PlayerControl : MonoBehaviour
             case States.shooting:
                 if(Input.GetMouseButton(1))
                 {
-                    if(shotForce < maxShotForce)
+                    if(shotForce < rWeapon.maxPower)
                     {
-                        shotForce += (maxShotForce/3) * Time.deltaTime;
+                        shotForce += (rWeapon.maxPower/rWeapon.shotChargeSpeed) * Time.deltaTime;
                         powerBar.value = shotForce;
                     }
                 }
 
                 else
                 {
-                    if (shotForce < minShotForce)
-                        shotForce = minShotForce;
+                    if (shotForce < rWeapon.minPower)
+                        shotForce = rWeapon.minPower;
 
-                    Arrow shot = Instantiate(Resources.Load<GameObject>("Low-Poly Weapons/Prefabs/Arrow_Regular"), transform.position + Vector3.up, transform.rotation).GetComponent<Arrow>();
-                    shot.shotForce = shotForce;
+                    rWeapon.fire(shotForce);
 
                     shotForce = 0;
 
@@ -212,7 +214,6 @@ public class PlayerControl : MonoBehaviour
                         currentState = States.freeRoam;
                 }
                 break;
-
         }
 
         if(Input.GetKeyDown("p"))
@@ -354,15 +355,6 @@ public class PlayerControl : MonoBehaviour
     {
         currentState = States.inAir;
         rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
-    }
-
-    void OnCollisionEnter(Collision collision)
-    {
-        if (currentState == States.inAir)
-        {
-            animate.SetBool("IsAirborne", false);
-            currentState = States.freeRoam;
-        }
     }
 
     private bool shouldToggleLockOn()
