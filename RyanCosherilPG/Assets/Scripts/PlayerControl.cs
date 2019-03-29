@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class PlayerControl : MonoBehaviour
 {
     public GameObject weapon;
+    BoxCollider collider;
     string currentWeapon;
     MeleeWeapon mWeapon;
     RangedWeapon rWeapon;
@@ -46,6 +47,7 @@ public class PlayerControl : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
+        collider = gameObject.GetComponent<BoxCollider>();
 
         currentState = States.freeRoam;
 
@@ -557,9 +559,27 @@ public class PlayerControl : MonoBehaviour
     {
         Debug.DrawRay(transform.position, transform.forward, Color.red, 1);
         RaycastHit info;
+
+        Collider[] cols = Physics.OverlapSphere(transform.position, 2f);
+
+        foreach()
         if (Physics.Raycast(transform.position, transform.forward, out info, 1))
         {
-            return info.transform.gameObject;
+            Interactable i = info.transform.gameObject.GetComponent<Interactable>();
+
+            if (i != null)
+            {
+                Debug.Log("Chest");
+                return info.transform.gameObject;
+
+            }
+            else
+            {
+                Debug.Log("not chest");
+                return null;
+            }
+                
+
         }
         else
             return null;

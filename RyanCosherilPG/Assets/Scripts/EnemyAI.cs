@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour {
 
     public float aggroRange;
+    public GameObject player;
     public enum States {idle, patroling, attacking, chasing};
     States currentState;
     public enum Transitions {seeSomething, lostSight, inRange, atRange, none};
@@ -21,6 +22,9 @@ public class EnemyAI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        setCurrentTransition();
+
 		switch(currentState)
         {
             case States.idle:
@@ -43,4 +47,19 @@ public class EnemyAI : MonoBehaviour {
         }
                
 	}
+
+    public void setCurrentState(States state)
+    {
+        this.currentState = state;
+    }
+
+    public void setCurrentTransition()
+    {
+        if (Vector3.Distance(transform.position, player.transform.position) <= aggroRange)
+        {
+            Debug.Log("sup");
+            navMeshAgent.SetDestination(player.transform.position);
+        }
+            
+    }
 }
