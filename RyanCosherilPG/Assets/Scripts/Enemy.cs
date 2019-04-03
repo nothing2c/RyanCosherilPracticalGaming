@@ -8,12 +8,15 @@ public class Enemy : MonoBehaviour {
     private Health enemyHealth;
     private TargetingIndicator indicator;
     public Slider healthBar;
+    EnemyAI ai;
 
 	// Use this for initialization
 	void Start () {
         Collections.targets.Add(this);
 
         isTargeted = false;
+
+        ai = gameObject.GetComponent<EnemyAI>();
 
         enemyHealth = gameObject.AddComponent<Health>();
         healthBar.value = enemyHealth.calculateHealth();

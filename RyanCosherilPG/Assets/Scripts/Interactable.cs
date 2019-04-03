@@ -7,5 +7,6 @@ using System.Text;
     interface Interactable
     {
          void interact();
+         bool isInteractable();
     }
 

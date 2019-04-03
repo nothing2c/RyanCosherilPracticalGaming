@@ -6,13 +6,13 @@ using UnityEngine.UI;
 public class Chest : MonoBehaviour, Interactable {
 
     int gold;
-    bool isInteractable;
+    bool canInteract;
     Animation open;
     // Use this for initialization
     void Start () {
         open = gameObject.GetComponent<Animation>();
         gold = (int)(Random.value * 100);
-        isInteractable = true;
+        canInteract = true;
 	}
 	
 	// Update is called once per frame
@@ -22,12 +22,18 @@ public class Chest : MonoBehaviour, Interactable {
 
     public void interact()
     {
-        if (isInteractable)
+        if (isInteractable())
         {
-            //GoldDisplayUpdater text = GameObject.Find("GoldDisplay").GetComponent<GoldDisplayUpdater>();
+            Debug.Log("opened");
+            GoldDisplayUpdater text = GameObject.Find("GoldDisplay").GetComponent<GoldDisplayUpdater>();
             open.Play("chestOpen");
-            //text.SendMessage("updateText", gold);
-            isInteractable = false;
+            text.SendMessage("updateText", gold);
+            canInteract = false;
         }
+    }
+
+    public bool isInteractable()
+    {
+        return canInteract;
     }
 }

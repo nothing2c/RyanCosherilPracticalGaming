@@ -26,7 +26,6 @@ public class MeleeWeapon : MonoBehaviour {
         if (other.gameObject.GetComponent<Health>())
         {
             other.gameObject.SendMessage("damage", damage);
-            Debug.Log("hello");
         }       
     }
 }

@@ -557,32 +557,50 @@ public class PlayerControl : MonoBehaviour
     /// </summary>
     private GameObject canInteract()
     {
-        Debug.DrawRay(transform.position, transform.forward, Color.red, 1);
-        RaycastHit info;
+        //Debug.DrawRay(transform.position, transform.forward, Color.red, 1);
+        //RaycastHit info;
 
         Collider[] cols = Physics.OverlapSphere(transform.position, 2f);
 
-        foreach()
-        if (Physics.Raycast(transform.position, transform.forward, out info, 1))
+        foreach(Collider c in cols)
         {
-            Interactable i = info.transform.gameObject.GetComponent<Interactable>();
-
-            if (i != null)
+            if(c.gameObject.GetComponent<Interactable>() != null)
             {
-                Debug.Log("Chest");
-                return info.transform.gameObject;
-
+                if(c.gameObject.GetComponent<Interactable>().isInteractable())
+                {
+                    Debug.Log("Chest");
+                    return c.transform.gameObject;
+                }
+                
             }
             else
             {
                 Debug.Log("not chest");
                 return null;
             }
+        }
+
+        return null;
+        //if (Physics.Raycast(transform.position, transform.forward, out info, 1))
+        //{
+        //    Interactable i = info.transform.gameObject.GetComponent<Interactable>();
+
+        //    if (i != null)
+        //    {
+        //        Debug.Log("Chest");
+        //        return info.transform.gameObject;
+
+        //    }
+        //    else
+        //    {
+        //        Debug.Log("not chest");
+        //        return null;
+        //    }
                 
 
-        }
-        else
-            return null;
+        //}
+        //else
+        //    return null;
     }
 
     /// <param name="interactedObject">object interacted with</param>
