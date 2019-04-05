@@ -10,7 +10,8 @@ public class EnemyAI : MonoBehaviour {
     public GameObject player;
     public enum States {idle, searching, attacking, chasing};
     States currentState;
-    public enum Transitions {seeSomething, lostSight, inRange, none};
+    public enum Transitions {seeSomething, lostSight, inMeleeRange, outOfMeleeRange, deAgro, none};
+    List<Transitions> currentPossibleTransitions;
     Transitions currentTransition;
     public NavMeshAgent navMeshAgent;
     Animator animate;
@@ -20,15 +21,16 @@ public class EnemyAI : MonoBehaviour {
         navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
         currentState = States.idle;
         currentTransition = Transitions.none;
+        currentPossibleTransitions = new List<Transitions>();
         aggroRange = 10f;
-        meleeRange = 5f;
+        meleeRange = 2f;
         animate = gameObject.GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-        currentTransition = setCurrentTransition();
+        currentPossibleTransitions = getPossibleTransitions();
         setCurrentState(currentTransition);
         
         switch(currentState)
@@ -80,7 +82,7 @@ public class EnemyAI : MonoBehaviour {
                 {
                     switch (transition)
                     {
-                        case Transitions.inRange:
+                        case Transitions.inMeleeRange:
                             currentState = States.attacking;
                             break;
                         case Transitions.lostSight:
@@ -93,22 +95,67 @@ public class EnemyAI : MonoBehaviour {
         }
     }
 
-    public Transitions setCurrentTransition()
+    public List<Transitions> getPossibleTransitions()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) <= aggroRange)
+        List<Transitions> possibleTransitions = new List<Transitions>();
+
+        if (inAggroRange() && isFacing())
         {
-            if (Vector3.Distance(transform.position, player.transform.position) <= meleeRange)
-            {
-                Debug.Log("in range yas");
-                return Transitions.inRange;
-            }
+            if (canSee())
+                possibleTransitions.Add(Transitions.seeSomething);
             else
-                return Transitions.seeSomething;
+                possibleTransitions.Add(Transitions.lostSight);
         }
 
-        
-            
+        if (inMeleeRange())
+            possibleTransitions.Add(Transitions.inMeleeRange);
+        else
+            possibleTransitions.Add(Transitions.outOfMeleeRange);
 
-        return Transitions.lostSight;
+        //if()
+
+        return possibleTransitions;
+    }
+
+    public bool inAggroRange()
+    {
+        if (Vector3.Distance(transform.position, player.transform.position) <= aggroRange)
+            return true;
+        else
+            return false;
+    }
+
+    public bool isFacing()
+    {
+        if (Vector3.Dot(player.transform.position - transform.position, transform.forward) > 0)
+            return true;
+        else
+            return false;
+    }
+
+    public bool canSee()
+    {
+        RaycastHit info;
+
+        if (Physics.Raycast(transform.position, transform.forward, out info, 100))
+        {
+            if (info.transform.gameObject == player)
+                return true;
+        }
+
+        return false;
+    }
+
+    public bool inMeleeRange()
+    {
+        if (Vector3.Distance(transform.position, player.transform.position) <= meleeRange)
+            return true;
+        else
+            return false;
+    }
+
+    public void searchTimer()
+    {
+
     }
 }
