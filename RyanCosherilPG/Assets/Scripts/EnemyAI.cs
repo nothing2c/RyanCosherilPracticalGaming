@@ -7,6 +7,7 @@ public class EnemyAI : MonoBehaviour {
 
     public float aggroRange;
     public float meleeRange;
+    public float searchTimer;
     public GameObject player;
     public enum States {idle, searching, attacking, chasing};
     States currentState;
@@ -30,8 +31,9 @@ public class EnemyAI : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        currentPossibleTransitions = getPossibleTransitions();
-        setCurrentState(currentTransition);
+        //currentPossibleTransitions = getPossibleTransitions();
+        setCurrentTransition();
+        setCurrentState();
         
         switch(currentState)
         {
@@ -42,22 +44,25 @@ public class EnemyAI : MonoBehaviour {
                 animate.SetBool("SeeSomething", true);
                 break;
             case States.attacking:
-                Debug.Log("inRange");
+                navMeshAgent.isStopped = true;
                 animate.SetBool("InRange", true);
                 break;
             case States.chasing:
+                navMeshAgent.isStopped = false;
                 animate.SetBool("SeeSomething", true);
                 navMeshAgent.SetDestination(player.transform.position);
                 break;
         }
+
+        Debug.Log(currentState + ", " + currentTransition);
 	}
 
-    public void setCurrentState(Transitions transition)
+    public void setCurrentState()
     {
         switch (currentState)
         {
             case States.idle:
-                switch (transition)
+                switch (currentTransition)
                 {
                     case Transitions.seeSomething:
                         currentState = States.chasing;
@@ -65,33 +70,94 @@ public class EnemyAI : MonoBehaviour {
                 }
                 break;
 
-            case States.searching:
-                switch (transition)
-                {
-                    case Transitions.seeSomething:
-                        currentState = States.chasing;
-                        break;
-                }
-                break;
-            case States.attacking:
-                {
-
-                }
-                break;
             case States.chasing:
                 {
-                    switch (transition)
+                    switch (currentTransition)
                     {
                         case Transitions.inMeleeRange:
                             currentState = States.attacking;
                             break;
                         case Transitions.lostSight:
                             currentState = States.searching;
-                                break;
+                            break;
                     }
-                
                 }
                 break;
+
+            case States.attacking:
+                {
+                    switch (currentTransition)
+                    {
+                        case Transitions.outOfMeleeRange:
+                            currentState = States.chasing;
+                            break;
+                    }
+                }
+                break;
+
+            case States.searching:
+                switch (currentTransition)
+                {
+                    case Transitions.seeSomething:
+                        currentState = States.chasing;
+                        break;
+                    case Transitions.deAgro:
+                        currentState = States.idle;
+                        break;
+                }
+                break;
+        }
+    }
+
+    public void setCurrentTransition()
+    {
+        switch(currentState)
+        {
+            case States.idle:
+                if (isFacing() && inAggroRange())
+                {
+                    if (canSee())
+                        currentTransition = Transitions.seeSomething;
+                    else
+                        currentTransition = Transitions.none;
+                }
+                else
+                    currentTransition = Transitions.none;
+                break;
+
+            case States.chasing:
+                if (inMeleeRange())
+                    currentTransition = Transitions.inMeleeRange;
+                else if (!canSee() || !inAggroRange())
+                    currentTransition = Transitions.lostSight;
+                else
+                    currentTransition = Transitions.none;
+                break;
+
+            case States.attacking:
+                if (!inMeleeRange())
+                    currentTransition = Transitions.outOfMeleeRange;
+                else
+                    currentTransition = Transitions.none;
+                break;
+
+            case States.searching:
+                if (isFacing() && inAggroRange())
+                {
+                    if (canSee())
+                        currentTransition = Transitions.seeSomething;
+                    else
+                        currentTransition = Transitions.none;
+                }
+                else if(searchTimer <= 0)
+                {
+                    currentTransition = Transitions.deAgro;
+                }
+                else
+                    currentTransition = Transitions.none;
+                break;
+
+            
         }
     }
 
@@ -137,7 +203,7 @@ public class EnemyAI : MonoBehaviour {
     {
         RaycastHit info;
 
-        if (Physics.Raycast(transform.position, transform.forward, out info, 100))
+        if (Physics.Raycast(transform.position, player.transform.position - transform.position, out info, 100))
         {
             if (info.transform.gameObject == player)
                 return true;
@@ -152,10 +218,5 @@ public class EnemyAI : MonoBehaviour {
             return true;
         else
             return false;
-    }
-
-    public void searchTimer()
-    {
-
     }
 }

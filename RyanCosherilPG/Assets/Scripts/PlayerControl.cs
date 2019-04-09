@@ -448,7 +448,10 @@ public class PlayerControl : MonoBehaviour
 
     private void breakLock()
     {
-        target.setIsTargeted(false);
+        if(target)
+        {
+            target.setIsTargeted(false);
+        }
         animate.SetBool("IsLockedOn", false);
         target = null;
         possibleTargets.Clear();
