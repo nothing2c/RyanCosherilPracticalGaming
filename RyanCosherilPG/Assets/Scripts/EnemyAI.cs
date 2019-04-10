@@ -9,6 +9,7 @@ public class EnemyAI : MonoBehaviour {
     public float meleeRange;
     public float searchTimer;
     public GameObject player;
+    public GameObject eyes;
     public enum States {idle, searching, attacking, chasing};
     States currentState;
     public enum Transitions {seeSomething, lostSight, inMeleeRange, outOfMeleeRange, deAgro, none};
@@ -17,6 +18,7 @@ public class EnemyAI : MonoBehaviour {
     public NavMeshAgent navMeshAgent;
     Animator animate;
     Vector3 lastKnownLocation;
+    Vector3 spawnPosition;
     // Use this for initialization
     void Start () {
         navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
@@ -26,6 +28,7 @@ public class EnemyAI : MonoBehaviour {
         aggroRange = 10f;
         meleeRange = 2f;
         animate = gameObject.GetComponent<Animator>();
+        spawnPosition = transform.position;
 	}
 	
 	// Update is called once per frame
@@ -38,10 +41,14 @@ public class EnemyAI : MonoBehaviour {
         switch(currentState)
         {
             case States.idle:
+                if(transform.position != spawnPosition)
+                    navMeshAgent.SetDestination(spawnPosition);
                 animate.SetBool("SeeSomething", false);
                 break;
             case States.searching:
+                searchTimer -= Time.deltaTime;
                 animate.SetBool("SeeSomething", true);
+                //Debug.Log(searchTimer);
                 break;
             case States.attacking:
                 navMeshAgent.isStopped = true;
@@ -54,7 +61,7 @@ public class EnemyAI : MonoBehaviour {
                 break;
         }
 
-        Debug.Log(currentState + ", " + currentTransition);
+        //Debug.Log(currentState + ", " + currentTransition);
 	}
 
     public void setCurrentState()
@@ -78,6 +85,7 @@ public class EnemyAI : MonoBehaviour {
                             currentState = States.attacking;
                             break;
                         case Transitions.lostSight:
+                            searchTimer = 5;
                             currentState = States.searching;
                             break;
                     }
@@ -142,12 +150,9 @@ public class EnemyAI : MonoBehaviour {
                 break;
 
             case States.searching:
-                if (isFacing() && inAggroRange())
+                if (inAggroRange() && canSee())
                 {
-                    if (canSee())
-                        currentTransition = Transitions.seeSomething;
-                    else
-                        currentTransition = Transitions.none;
+                    currentTransition = Transitions.seeSomething;
                 }
                 else if(searchTimer <= 0)
                 {
@@ -203,7 +208,7 @@ public class EnemyAI : MonoBehaviour {
     {
         RaycastHit info;
 
-        if (Physics.Raycast(transform.position, player.transform.position - transform.position, out info, 100))
+        if (Physics.Raycast(eyes.transform.position, player.transform.position - transform.position, out info, 100))
         {
             if (info.transform.gameObject == player)
                 return true;
@@ -214,9 +219,15 @@ public class EnemyAI : MonoBehaviour {
 
     public bool inMeleeRange()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) <= meleeRange)
+        if (Vector3.Distance(transform.position, player.transform.position + Vector3.up) <= meleeRange)
+        {
+            Debug.Log("Sight");
             return true;
+        }     
         else
+        {
+            Debug.Log("Lost Sight");
             return false;
+        }
     }
 }
