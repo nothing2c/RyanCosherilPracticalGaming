@@ -180,7 +180,7 @@ public class PlayerControl : MonoBehaviour
                     animate.SetBool("AttackQued", true);
                 }
 
-                if (animate.GetBool("IsAttacking")==false)
+                if (animate.GetBool("IsAttacking") == false && animate.GetBool("AttackQued") == false)
                 {
                     if (target)
                         currentState = States.lockedOn;

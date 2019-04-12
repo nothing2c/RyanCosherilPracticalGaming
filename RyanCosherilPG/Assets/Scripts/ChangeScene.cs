@@ -21,7 +21,6 @@ public class ChangeScene : MonoBehaviour {
     {
         if(other.gameObject.tag.Equals("Player"))
         {
-            Debug.Log("changed");
             SceneManager.LoadScene((int) targetScene);
         }
             

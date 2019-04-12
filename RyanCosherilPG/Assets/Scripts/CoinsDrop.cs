@@ -5,9 +5,11 @@ using UnityEngine;
 public class CoinsDrop : MonoBehaviour {
 
     int value;
+    GoldDisplayUpdater text;
     // Use this for initialization
     void Start () {
         value = (int)(Random.value * 100);
+        text = FindObjectOfType<GoldDisplayUpdater>();
     }
 	
 	// Update is called once per frame
@@ -19,7 +21,6 @@ public class CoinsDrop : MonoBehaviour {
     {
         if(collision.collider == GameObject.Find("player").GetComponent<BoxCollider>())
         {
-            GoldDisplayUpdater text = GameObject.Find("GoldDisplay").GetComponent<GoldDisplayUpdater>();
             text.SendMessage("updateText", value);
             Destroy(gameObject);
         }      

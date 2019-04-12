@@ -15,10 +15,10 @@ public class MeleeWeapon : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (gameObject.GetComponentInParent<Animator>().GetBool("IsAttacking"))
-            collider.enabled = true;
-        else
-            collider.enabled = false;
+        //if (gameObject.GetComponentInParent<Animator>().GetBool("IsAttacking"))
+        //    collider.enabled = true;
+        //else
+        //    collider.enabled = false;
     }
 
     private void OnTriggerEnter(Collider other)

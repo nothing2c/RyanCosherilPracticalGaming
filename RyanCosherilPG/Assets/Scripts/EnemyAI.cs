@@ -9,7 +9,6 @@ public class EnemyAI : MonoBehaviour {
     public float meleeRange;
     public float searchTimer;
     public GameObject player;
-    public GameObject eyes;
     public enum States {idle, searching, attacking, chasing};
     States currentState;
     public enum Transitions {seeSomething, lostSight, inMeleeRange, outOfMeleeRange, deAgro, none};
@@ -17,7 +16,6 @@ public class EnemyAI : MonoBehaviour {
     Transitions currentTransition;
     public NavMeshAgent navMeshAgent;
     Animator animate;
-    Vector3 lastKnownLocation;
     Vector3 spawnPosition;
     // Use this for initialization
     void Start () {
@@ -34,7 +32,6 @@ public class EnemyAI : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        //currentPossibleTransitions = getPossibleTransitions();
         setCurrentTransition();
         setCurrentState();
         
@@ -48,11 +45,10 @@ public class EnemyAI : MonoBehaviour {
             case States.searching:
                 searchTimer -= Time.deltaTime;
                 animate.SetBool("SeeSomething", true);
-                //Debug.Log(searchTimer);
                 break;
             case States.attacking:
                 navMeshAgent.isStopped = true;
-                animate.SetBool("InRange", true);
+                animate.SetBool("IsAttacking", true);
                 break;
             case States.chasing:
                 navMeshAgent.isStopped = false;
@@ -136,7 +132,7 @@ public class EnemyAI : MonoBehaviour {
             case States.chasing:
                 if (inMeleeRange())
                     currentTransition = Transitions.inMeleeRange;
-                else if (!canSee() || !inAggroRange())
+                else if (!canSee())
                     currentTransition = Transitions.lostSight;
                 else
                     currentTransition = Transitions.none;
@@ -166,28 +162,6 @@ public class EnemyAI : MonoBehaviour {
         }
     }
 
-    public List<Transitions> getPossibleTransitions()
-    {
-        List<Transitions> possibleTransitions = new List<Transitions>();
-
-        if (inAggroRange() && isFacing())
-        {
-            if (canSee())
-                possibleTransitions.Add(Transitions.seeSomething);
-            else
-                possibleTransitions.Add(Transitions.lostSight);
-        }
-
-        if (inMeleeRange())
-            possibleTransitions.Add(Transitions.inMeleeRange);
-        else
-            possibleTransitions.Add(Transitions.outOfMeleeRange);
-
-        //if()
-
-        return possibleTransitions;
-    }
-
     public bool inAggroRange()
     {
         if (Vector3.Distance(transform.position, player.transform.position) <= aggroRange)
@@ -207,8 +181,9 @@ public class EnemyAI : MonoBehaviour {
     public bool canSee()
     {
         RaycastHit info;
+        Debug.DrawRay(transform.position + Vector3.up, (player.transform.position - transform.position), Color.black, 100);
 
-        if (Physics.Raycast(eyes.transform.position, player.transform.position - transform.position, out info, 100))
+        if (Physics.Raycast(transform.position + Vector3.up, (player.transform.position - transform.position), out info, 100))
         {
             if (info.transform.gameObject == player)
                 return true;
@@ -219,15 +194,9 @@ public class EnemyAI : MonoBehaviour {
 
     public bool inMeleeRange()
     {
-        if (Vector3.Distance(transform.position, player.transform.position + Vector3.up) <= meleeRange)
-        {
-            Debug.Log("Sight");
-            return true;
-        }     
+        if (Vector3.Distance(transform.position, player.transform.position + Vector3.up) <= meleeRange) 
+            return true;   
         else
-        {
-            Debug.Log("Lost Sight");
             return false;
-        }
     }
 }
