@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 public class PlayerControl : MonoBehaviour
 {
     public GameObject weapon;
-    BoxCollider collider;
     string currentWeapon;
     MeleeWeapon mWeapon;
     RangedWeapon rWeapon;
@@ -42,13 +41,12 @@ public class PlayerControl : MonoBehaviour
     public Slider healthBar;
     public Slider powerBar;
     Rigidbody rb;
+    Collider col;
 
     float shotForce;
 
 	// Use this for initialization
 	void Start () {
-        collider = gameObject.GetComponent<BoxCollider>();
-
         currentState = States.freeRoam;
 
         currentWeapon = "melee";
@@ -66,6 +64,7 @@ public class PlayerControl : MonoBehaviour
         myhealth = gameObject.AddComponent<Health>();
         possibleTargets = new List<Enemy>();
         rb = gameObject.GetComponent<Rigidbody>();
+        col = gameObject.GetComponent<BoxCollider>();
         animate = GetComponent<Animator>();
 
         shotForce = 0;
@@ -216,15 +215,14 @@ public class PlayerControl : MonoBehaviour
                         currentState = States.freeRoam;
                 }
                 break;
+            case States.dead:
+                death();
+                break;
         }
 
         if(Input.GetKeyDown("p"))
         {
-            myhealth.adjustHealth(-10);
-            healthBar.value = myhealth.calculateHealth();
-
-            if (myhealth.currentHealth <= 0)
-                death();
+            damage(22);
         }
            
         Camera.main.transform.position = transform.position - camToPlayer;
@@ -366,7 +364,7 @@ public class PlayerControl : MonoBehaviour
 
     private void aquireTargets()
     {
-        foreach (Enemy e in Collections.targets)
+        foreach (Enemy e in GameManager.targets)
         {
             if (Vector3.Dot(e.transform.position - Camera.main.transform.position, Camera.main.transform.forward) > 0)
             {
@@ -533,21 +531,23 @@ public class PlayerControl : MonoBehaviour
 
     void death()
     {
-        GameObject.Find("HUD").AddComponent<Text>();
-        Text youDied = GameObject.Find("HUD").GetComponent<Text>();
-        youDied.text = "You Died";
-        youDied.color = Color.black;
-        youDied.fontSize = 100;
-        youDied.font = Resources.Load<Font>("brotherhood");
-        youDied.alignment = TextAnchor.MiddleCenter;
+        animate.applyRootMotion = true;
+        animate.SetBool("IsDead", true);
+        col.enabled = false;
+        Destroy(rb);
 
-        Invoke("reloadScene", 3);
+        GameManager.currentGameState = GameManager.GameStates.playerDead;
     }
 
-    void reloadScene()
+    public void damage(float damage)
     {
-        Scene loadedLevel = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(loadedLevel.buildIndex);
+        myhealth.adjustHealth(-damage);
+        healthBar.value = myhealth.calculateHealth();
+
+        if (myhealth.currentHealth <= 0)
+        {
+            currentState = States.dead;
+        }
     }
 
     private bool shouldInteract()
@@ -560,55 +560,30 @@ public class PlayerControl : MonoBehaviour
     /// </summary>
     private GameObject canInteract()
     {
-        //Debug.DrawRay(transform.position, transform.forward, Color.red, 1);
-        //RaycastHit info;
-
         Collider[] cols = Physics.OverlapSphere(transform.position, 2f);
 
         foreach(Collider c in cols)
         {
-            if(c.gameObject.GetComponent<Interactable>() != null)
+            if (c.gameObject.GetComponent<Interactable>() != null)
             {
-                if(c.gameObject.GetComponent<Interactable>().isInteractable())
+                if (c.gameObject.GetComponent<Interactable>().isInteractable())
                 {
-                    Debug.Log("Chest");
                     return c.transform.gameObject;
                 }
                 
             }
             else
             {
-                Debug.Log("not chest");
                 return null;
             }
         }
 
         return null;
-        //if (Physics.Raycast(transform.position, transform.forward, out info, 1))
-        //{
-        //    Interactable i = info.transform.gameObject.GetComponent<Interactable>();
-
-        //    if (i != null)
-        //    {
-        //        Debug.Log("Chest");
-        //        return info.transform.gameObject;
-
-        //    }
-        //    else
-        //    {
-        //        Debug.Log("not chest");
-        //        return null;
-        //    }
-                
-
-        //}
-        //else
-        //    return null;
     }
 
     /// <param name="interactedObject">object interacted with</param>
     private void interact(GameObject interactedObject)
     {
-        interactedObject.SendMessage("interact");
+        interactedObject.SendMessage("interact", gameObject);
     }
 }

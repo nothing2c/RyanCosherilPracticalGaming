@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
-
-    interface Interactable
+interface Interactable
     {
-         void interact();
+         void interact(GameObject interactor);
          bool isInteractable();
     }
 

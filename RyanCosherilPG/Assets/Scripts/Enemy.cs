@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Collections.targets.Add(this);
+        GameManager.targets.Add(this);
 
         isTargeted = false;
 
@@ -66,7 +66,7 @@ public class Enemy : MonoBehaviour {
     void death()
     {
         GameObject goldDrop = Resources.Load<GameObject>("prefabs/goldCoins");
-        Collections.targets.Remove(this);
+        GameManager.targets.Remove(this);
         Instantiate(goldDrop, gameObject.transform.position, goldDrop.transform.rotation);
         Destroy(gameObject);
     }

@@ -21,7 +21,6 @@ public class EndAttack : StateMachineBehaviour {
 
         if (animator.GetBool("AttackQued")==false)
         {
-            Debug.Log("yas");
             animator.SetBool("IsAttacking", false);
             animator.applyRootMotion = false;
         }
@@ -29,9 +28,6 @@ public class EndAttack : StateMachineBehaviour {
         animator.SetBool("AttackQued", false);
 
         weaponCollider.enabled = false;
-
-        if (weaponCollider.enabled == false)
-            Debug.Log("yeet");
     }
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state

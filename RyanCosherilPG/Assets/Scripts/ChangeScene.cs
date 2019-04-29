@@ -7,27 +7,18 @@ public class ChangeScene : MonoBehaviour {
 
     public enum GameScene { Hub, Forrest}
     public GameScene targetScene;
+    GameManager manager;
 	// Use this for initialization
 	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+        manager = FindObjectOfType<GameManager>();
 	}
 
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.tag.Equals("Player"))
-        {
-            SceneManager.LoadScene((int) targetScene);
+        {  
+            manager.changeScene((int) targetScene);
         }
             
-    }
-
-    public static void changeScene(Scene sceneToLoad)
-    {
-        SceneManager.LoadScene(sceneToLoad.buildIndex);
     }
 }

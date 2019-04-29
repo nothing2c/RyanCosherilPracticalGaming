@@ -23,7 +23,6 @@ public class WeaponSwap : MonoBehaviour {
         switch(currentWeaponType)
         {
             case "melee":
-                //gameObject.GetComponentInChildren<GameObject>().SetActive(false);
                 meleeWeapon.SetActive(false);
                 rangedWeapon.SetActive(true);
                 return "range";

@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class MeleeWeapon : MonoBehaviour {
 
-    CapsuleCollider collider;
+    CapsuleCollider col;
     float damage;
 	// Use this for initialization
 	void Start () {
-        collider = gameObject.GetComponent<CapsuleCollider>();
-        collider.enabled = false;
+        col = gameObject.GetComponent<CapsuleCollider>();
+        col.enabled = false;
         damage = 40;
 	}
 	

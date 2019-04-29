@@ -20,16 +20,13 @@ public class Chest : MonoBehaviour, Interactable {
 
 	}
 
-    public void interact()
+    public void interact(GameObject interactor)
     {
-        if (isInteractable())
-        {
-            Debug.Log("opened");
-            GoldDisplayUpdater text = GameObject.Find("GoldDisplay").GetComponent<GoldDisplayUpdater>();
-            open.Play("chestOpen");
-            text.SendMessage("updateText", gold);
-            canInteract = false;
-        }
+        Debug.Log("opened");
+        GoldDisplayUpdater text = GameObject.Find("GoldDisplay").GetComponent<GoldDisplayUpdater>();
+        open.Play("chestOpen");
+        text.SendMessage("updateText", gold);
+        canInteract = false;
     }
 
     public bool isInteractable()
