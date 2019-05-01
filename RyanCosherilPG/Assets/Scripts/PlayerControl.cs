@@ -51,13 +51,15 @@ public class PlayerControl : MonoBehaviour
 
         currentWeapon = "melee";
 
+        healthBar = FindObjectOfType<GameManager>().GetComponentInChildren<Slider>();
+
         rWeapon = gameObject.GetComponentInChildren<RangedWeapon>();
         mWeapon = gameObject.GetComponentInChildren<MeleeWeapon>();
         runSpeed = 6;
         walkSpeed = runSpeed / 2;
         lockOnRange = 10;
         jumpHeight = 5;
-        cameraTurnSpeed = 20;
+        cameraTurnSpeed = 1;
 
         camToPlayer = transform.position - Camera.main.transform.position;
 
@@ -191,11 +193,15 @@ public class PlayerControl : MonoBehaviour
             case States.shooting:
                 if(Input.GetMouseButton(1))
                 {
-                    if(shotForce < rWeapon.maxPower)
+                    powerBar.maxValue = rWeapon.maxPower;
+                    if (shotForce < rWeapon.maxPower)
                     {
+                        
                         shotForce += (rWeapon.maxPower/rWeapon.shotChargeSpeed) * Time.deltaTime;
-                        powerBar.value = shotForce;
+                        
+                        Debug.Log(powerBar.value);
                     }
+                    powerBar.value = shotForce;
                 }
 
                 else
@@ -226,7 +232,7 @@ public class PlayerControl : MonoBehaviour
         }
            
         Camera.main.transform.position = transform.position - camToPlayer;
-        Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed * Time.deltaTime);
+        Camera.main.transform.RotateAround(transform.position, Vector3.up, Input.GetAxis("Horizontal") * cameraTurnSpeed);
         camToPlayer = transform.position - Camera.main.transform.position;
         
     }
@@ -536,7 +542,7 @@ public class PlayerControl : MonoBehaviour
         col.enabled = false;
         Destroy(rb);
 
-        GameManager.currentGameState = GameManager.GameStates.playerDead;
+        FindObjectOfType<GameManager>().setCurrentGameState(GameManager.GameStates.playerDead); 
     }
 
     public void damage(float damage)

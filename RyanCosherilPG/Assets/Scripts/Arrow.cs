@@ -47,13 +47,16 @@ public class Arrow : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {   
-        if(other != firedFrom.transform.root.GetComponent<BoxCollider>())
+        if(!isCollided)
         {
-            if (other.gameObject.GetComponent<Health>())
+            if (other != firedFrom.transform.root.GetComponent<BoxCollider>())
             {
-                other.gameObject.SendMessage("damage", damage);
+                if (other.gameObject.GetComponent<Health>())
+                {
+                    other.gameObject.SendMessage("damage", damage);
+                }
+                stick(other.transform);
             }
-            stick(other.transform);
         }
     }
 

@@ -34,7 +34,7 @@ public class blacksmith : NPC , Interactable {
     {
         currentState = States.chatting;
         GameManager.talkingNPC = this;
-        GameManager.currentGameState = GameManager.GameStates.talking;
+        FindObjectOfType<GameManager>().setCurrentGameState(GameManager.GameStates.talking);
         player = interactor;
     }
 

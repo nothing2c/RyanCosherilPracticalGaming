@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour {
     public Image screenTransition;
     public DialogBox dialogBox;
     public enum GameStates {freeRoam, talking, playerDead}
-    public static GameStates currentGameState;
+    public GameStates currentGameState;
     public static NPC talkingNPC;
     public GameObject player;
     bool needToChangeScene;
@@ -26,8 +26,29 @@ public class GameManager : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {    
-        switch(currentGameState)
+	void Update () {
+        switch (currentGameState)
+        {
+            case GameStates.freeRoam:
+                break;
+            case GameStates.talking:
+                if (Vector3.Distance(player.transform.position, talkingNPC.transform.position) > 5)
+                {
+                    talkingNPC.exitTalking();
+                    setCurrentGameState(GameStates.freeRoam);
+                }
+                break;
+            case GameStates.playerDead:
+                break;
+        }
+
+        Debug.Log(currentGameState);
+
+    }
+
+    public void setCurrentGameState(GameStates gameState)
+    {
+        switch (gameState)
         {
             case GameStates.freeRoam:
                 dialogBox.gameObject.SetActive(false);
@@ -36,12 +57,6 @@ public class GameManager : MonoBehaviour {
                 dialogBox.characterName.text = talkingNPC.characterName;
                 dialogBox.dialog.text = talkingNPC.getLine(0);
                 dialogBox.gameObject.SetActive(true);
-
-                if (Vector3.Distance(player.transform.position, talkingNPC.transform.position) > 5)
-                {
-                    talkingNPC.exitTalking();
-                    currentGameState = GameStates.freeRoam;
-                }
                 break;
             case GameStates.playerDead:
                 GameObject newGameObject = new GameObject();
@@ -57,7 +72,8 @@ public class GameManager : MonoBehaviour {
                 currentGameState = GameStates.freeRoam;
                 break;
         }
-            
+
+        currentGameState = gameState;
     }
 
     public void changeScene(int sceneIndex)

@@ -24,7 +24,7 @@ public class EnemyAI : MonoBehaviour {
         currentTransition = Transitions.none;
         currentPossibleTransitions = new List<Transitions>();
         aggroRange = 10f;
-        meleeRange = 2f;
+        meleeRange = 1.5f;
         animate = gameObject.GetComponent<Animator>();
         spawnPosition = transform.position;
 	}
@@ -38,11 +38,33 @@ public class EnemyAI : MonoBehaviour {
         switch(currentState)
         {
             case States.idle:
-                if(transform.position != spawnPosition)
+                if(Vector3.Distance(transform.position, spawnPosition) > .1f)
+                {
+                    Debug.Log(transform.position + ", " + spawnPosition);
                     navMeshAgent.SetDestination(spawnPosition);
+                    animate.SetBool("NeedToMove", true);
+                }
+                else
+                {
+                    animate.SetBool("NeedToMove", false);
+                }
+
                 animate.SetBool("SeeSomething", false);
                 break;
             case States.searching:
+                if (!navMeshAgent.pathPending)
+                {
+                    if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
+                    {
+                        if (!navMeshAgent.hasPath || navMeshAgent.velocity.sqrMagnitude == 0f)
+                        {
+                            animate.SetBool("NeedToMove", false);
+                        }
+                    }
+                }
+
+                //Debug.Log(navMeshAgent.remainingDistance + ", " + navMeshAgent.stoppingDistance);
+
                 searchTimer -= Time.deltaTime;
                 animate.SetBool("SeeSomething", true);
                 break;
@@ -52,7 +74,7 @@ public class EnemyAI : MonoBehaviour {
                 break;
             case States.chasing:
                 navMeshAgent.isStopped = false;
-                animate.SetBool("SeeSomething", true);
+                animate.SetBool("NeedToMove", true);
                 navMeshAgent.SetDestination(player.transform.position);
                 break;
         }

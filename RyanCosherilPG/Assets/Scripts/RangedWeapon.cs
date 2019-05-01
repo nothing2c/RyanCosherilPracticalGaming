@@ -17,13 +17,14 @@ public class RangedWeapon : MonoBehaviour {
         shotChargeSpeed = 5;
         damage = 20;
 
-        shotSpawn.transform.forward = Vector3.forward;
+        shotSpawn.transform.forward = transform.parent.forward;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        shotSpawn.transform.forward = transform.parent.forward;
+
+    }
 
     public void fire(float shotForce)
     {
