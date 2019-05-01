@@ -542,7 +542,9 @@ public class PlayerControl : MonoBehaviour
         col.enabled = false;
         Destroy(rb);
 
-        FindObjectOfType<GameManager>().setCurrentGameState(GameManager.GameStates.playerDead); 
+        FindObjectOfType<GameManager>().setCurrentGameState(GameManager.GameStates.playerDead);
+
+        enabled = false;
     }
 
     public void damage(float damage)
@@ -576,7 +578,6 @@ public class PlayerControl : MonoBehaviour
                 {
                     return c.transform.gameObject;
                 }
-                
             }
             else
             {

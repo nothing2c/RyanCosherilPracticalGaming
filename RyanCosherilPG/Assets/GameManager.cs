@@ -41,9 +41,6 @@ public class GameManager : MonoBehaviour {
             case GameStates.playerDead:
                 break;
         }
-
-        Debug.Log(currentGameState);
-
     }
 
     public void setCurrentGameState(GameStates gameState)
@@ -59,9 +56,8 @@ public class GameManager : MonoBehaviour {
                 dialogBox.gameObject.SetActive(true);
                 break;
             case GameStates.playerDead:
-                GameObject newGameObject = new GameObject();
-                newGameObject.transform.SetParent(HUD.transform);
-                Text youDied = newGameObject.AddComponent<Text>();
+                HUD.gameObject.AddComponent<Text>();
+                Text youDied = HUD.gameObject.GetComponent<Text>();
                 youDied.text = "You Died";
                 youDied.color = Color.red;
                 youDied.fontSize = 100;
@@ -69,7 +65,6 @@ public class GameManager : MonoBehaviour {
                 youDied.alignment = TextAnchor.MiddleCenter;
 
                 changeScene(SceneManager.GetActiveScene().buildIndex);
-                currentGameState = GameStates.freeRoam;
                 break;
         }
 

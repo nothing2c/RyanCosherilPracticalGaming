@@ -82,6 +82,12 @@ public class EnemyAI : MonoBehaviour {
         //Debug.Log(currentState + ", " + currentTransition);
 	}
 
+    public void setCurrentState(Transitions transition)
+    {
+        currentTransition = transition;
+        setCurrentState();
+    }
+
     public void setCurrentState()
     {
         switch (currentState)

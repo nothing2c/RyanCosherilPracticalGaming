@@ -55,6 +55,7 @@ public class Enemy : MonoBehaviour {
     {
         enemyHealth.adjustHealth(-damage);
         healthBar.value = enemyHealth.calculateHealth();
+        ai.setCurrentState(EnemyAI.Transitions.seeSomething);
 
         if (enemyHealth.currentHealth <= 0)
         {

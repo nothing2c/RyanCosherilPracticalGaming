@@ -4,13 +4,22 @@ using UnityEngine;
 
 public class EndAttack : StateMachineBehaviour {
 
-	
+    public static bool hasHit = false; 
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         Collider weaponCollider = animator.gameObject.GetComponentInChildren<MeleeWeapon>().gameObject.GetComponent<CapsuleCollider>();
 
-        weaponCollider.enabled = true;
+        if(hasHit)
+        {
+            weaponCollider.enabled = false;
+            Debug.Log("disabled");
+        }
+        else
+        {
+            weaponCollider.enabled = true;
+            Debug.Log("enabled");
+        }
     }
 
 	// OnStateExit is called when a transition ends and the state machine finishes evaluating this state
@@ -28,6 +37,8 @@ public class EndAttack : StateMachineBehaviour {
         animator.SetBool("AttackQued", false);
 
         weaponCollider.enabled = false;
+
+        hasHit = false;
     }
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
