@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour {
     public enum GameStates {freeRoam, talking, playerDead}
     public GameStates currentGameState;
     public static NPC talkingNPC;
-    public GameObject player;
+    public PlayerControl player;
     bool needToChangeScene;
 
     // Use this for initialization
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour {
         StartCoroutine(fadeIn());
         dialogBox.gameObject.SetActive(false);
         currentGameState = GameStates.freeRoam;
-        player = FindObjectOfType<PlayerControl>().gameObject;
+        player = FindObjectOfType<PlayerControl>();
     }
 	
 	// Update is called once per frame
@@ -34,9 +34,28 @@ public class GameManager : MonoBehaviour {
             case GameStates.talking:
                 if (Vector3.Distance(player.transform.position, talkingNPC.transform.position) > 5)
                 {
-                    talkingNPC.exitTalking();
                     setCurrentGameState(GameStates.freeRoam);
                 }
+
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    switch(talkingNPC.getLine(talkingNPC.currentLineIndex).getEffect())
+                    {
+                        case DialogLine.effect.continueDialog:
+                            dialogBox.dialog.text = talkingNPC.getLine(talkingNPC.currentLineIndex + 1).toString();
+                            talkingNPC.currentLineIndex++;
+                            break;
+                        case DialogLine.effect.exitDialog:
+                            setCurrentGameState(GameStates.freeRoam);
+                            break;
+                        case DialogLine.effect.attack:
+                            setCurrentGameState(GameStates.freeRoam);
+                            break;
+                    }
+
+                    
+                }
+                    
                 break;
             case GameStates.playerDead:
                 break;
@@ -50,14 +69,19 @@ public class GameManager : MonoBehaviour {
             case GameStates.freeRoam:
                 currentGameState = gameState;
 
+                if(talkingNPC)
+                    talkingNPC.exitTalking();
+
                 dialogBox.gameObject.SetActive(false);
+                player.enabled = true;
                 break;
             case GameStates.talking:
                 currentGameState = gameState;
 
                 dialogBox.characterName.text = talkingNPC.characterName;
-                dialogBox.dialog.text = talkingNPC.getLine(0);
+                dialogBox.dialog.text = talkingNPC.getLine(talkingNPC.currentLineIndex).toString();
                 dialogBox.gameObject.SetActive(true);
+                player.enabled = false;
                 break;
             case GameStates.playerDead:
                 currentGameState = gameState;

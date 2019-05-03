@@ -27,6 +27,7 @@ public class EnemyAI : MonoBehaviour {
         meleeRange = 1.5f;
         animate = gameObject.GetComponent<Animator>();
         spawnPosition = transform.position;
+        player = FindObjectOfType<PlayerControl>().gameObject;
 	}
 	
 	// Update is called once per frame

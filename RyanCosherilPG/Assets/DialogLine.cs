@@ -17,15 +17,16 @@ public class DialogLine {
         this.lineEffect = lineEffect;
         responses = new List<string>();
     }
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    public string toString()
+    {
+        return line;
+    }
+
+    public effect getEffect()
+    {
+        return lineEffect;
+    }
 
     public string getLine()
     {

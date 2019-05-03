@@ -2,7 +2,7 @@ fileFormatVersion: 2
 guid: 608191cf3aeaa85419bb4558fccb064b
 timeCreated: 18446744011573954816
 ModelImporter:
-  serializedVersion: 21
+  serializedVersion: 22
   fileIDToRecycleName:
     100000: Bip01
     100002: Bip01 Cape0
@@ -115,10 +115,12 @@ ModelImporter:
     13700006: geoSkin
     13700008: geoStandard
     13700010: geoSword
+  externalObjects: {}
   materials:
     importMaterials: 1
     materialName: 3
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -131,6 +133,7 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
     animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
@@ -150,7 +153,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -178,7 +181,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

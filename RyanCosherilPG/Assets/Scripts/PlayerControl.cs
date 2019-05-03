@@ -568,10 +568,9 @@ public class PlayerControl : MonoBehaviour
     /// </summary>
     private GameObject canInteract()
     {
-        int i = 0;
         Collider[] cols = Physics.OverlapSphere(transform.position, 2f);
 
-        foreach(Collider c in cols)
+        foreach (Collider c in cols)
         {
             if (c.gameObject.GetComponent<Interactable>() != null)
             {
@@ -585,7 +584,6 @@ public class PlayerControl : MonoBehaviour
                 return null;
             }
         }
-
         return null;
     }
 

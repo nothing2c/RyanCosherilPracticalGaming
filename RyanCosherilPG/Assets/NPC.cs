@@ -6,6 +6,7 @@ public abstract class NPC : MonoBehaviour {
 
     public string characterName;
     List<DialogLine> dialogLines;
+    public int currentLineIndex;
 	// Use this for initialization
 	void Awake () {
         dialogLines = new List<DialogLine>();
@@ -21,10 +22,9 @@ public abstract class NPC : MonoBehaviour {
         dialogLines.Add(line);
     }
 
-    public string getLine(int index)
+    public DialogLine getLine(int index)
     {
-
-        return dialogLines[index].getLine();
+        return dialogLines[index];
     }
 
     public abstract void exitTalking();
