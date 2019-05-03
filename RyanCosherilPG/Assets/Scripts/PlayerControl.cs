@@ -568,12 +568,14 @@ public class PlayerControl : MonoBehaviour
     /// </summary>
     private GameObject canInteract()
     {
+        int i = 0;
         Collider[] cols = Physics.OverlapSphere(transform.position, 2f);
 
         foreach(Collider c in cols)
         {
             if (c.gameObject.GetComponent<Interactable>() != null)
             {
+                Debug.Log(i++);
                 if (c.gameObject.GetComponent<Interactable>().isInteractable())
                 {
                     return c.transform.gameObject;

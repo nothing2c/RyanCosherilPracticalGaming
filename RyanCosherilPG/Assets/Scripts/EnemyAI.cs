@@ -40,7 +40,6 @@ public class EnemyAI : MonoBehaviour {
             case States.idle:
                 if(Vector3.Distance(transform.position, spawnPosition) > .1f)
                 {
-                    Debug.Log(transform.position + ", " + spawnPosition);
                     navMeshAgent.SetDestination(spawnPosition);
                     animate.SetBool("NeedToMove", true);
                 }
@@ -63,8 +62,6 @@ public class EnemyAI : MonoBehaviour {
                     }
                 }
 
-                //Debug.Log(navMeshAgent.remainingDistance + ", " + navMeshAgent.stoppingDistance);
-
                 searchTimer -= Time.deltaTime;
                 animate.SetBool("SeeSomething", true);
                 break;
@@ -78,8 +75,6 @@ public class EnemyAI : MonoBehaviour {
                 navMeshAgent.SetDestination(player.transform.position);
                 break;
         }
-
-        //Debug.Log(currentState + ", " + currentTransition);
 	}
 
     public void setCurrentState(Transitions transition)

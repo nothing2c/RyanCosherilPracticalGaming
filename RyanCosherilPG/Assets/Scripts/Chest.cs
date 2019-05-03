@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Chest : MonoBehaviour, Interactable {
 
     int gold;
-    bool canInteract;
+    public bool canInteract;
     Animation open;
     // Use this for initialization
     void Start () {
@@ -22,7 +22,6 @@ public class Chest : MonoBehaviour, Interactable {
 
     public void interact(GameObject interactor)
     {
-        Debug.Log("opened");
         GoldDisplayUpdater text = GameObject.Find("GoldDisplay").GetComponent<GoldDisplayUpdater>();
         open.Play("chestOpen");
         text.SendMessage("updateText", gold);
