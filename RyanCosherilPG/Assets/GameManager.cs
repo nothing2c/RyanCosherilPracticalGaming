@@ -48,14 +48,20 @@ public class GameManager : MonoBehaviour {
         switch (gameState)
         {
             case GameStates.freeRoam:
+                currentGameState = gameState;
+
                 dialogBox.gameObject.SetActive(false);
                 break;
             case GameStates.talking:
+                currentGameState = gameState;
+
                 dialogBox.characterName.text = talkingNPC.characterName;
                 dialogBox.dialog.text = talkingNPC.getLine(0);
                 dialogBox.gameObject.SetActive(true);
                 break;
             case GameStates.playerDead:
+                currentGameState = gameState;
+
                 HUD.gameObject.AddComponent<Text>();
                 Text youDied = HUD.gameObject.GetComponent<Text>();
                 youDied.text = "You Died";
@@ -67,8 +73,6 @@ public class GameManager : MonoBehaviour {
                 changeScene(SceneManager.GetActiveScene().buildIndex);
                 break;
         }
-
-        currentGameState = gameState;
     }
 
     public void changeScene(int sceneIndex)
@@ -90,6 +94,12 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator fadeOut(int sceneIndex)
     {
+        if (currentGameState == GameStates.playerDead)
+        {
+            yield return new WaitForSeconds(3);
+        }
+            
+
         Color c = screenTransition.color;
         while (screenTransition.color.a < 1)
         {

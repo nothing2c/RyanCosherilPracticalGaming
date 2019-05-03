@@ -14,7 +14,7 @@ public class blacksmith : NPC , Interactable {
         animator = gameObject.GetComponent<Animator>();
         currentState = States.idle;
         characterName = "Andre";
-        addLine("My face hurts");
+        addLine(new DialogLine("My Face Hurts", true, DialogLine.effect.continueDialog));
 	}
 	
 	// Update is called once per frame

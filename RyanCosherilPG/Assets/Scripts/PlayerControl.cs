@@ -575,7 +575,6 @@ public class PlayerControl : MonoBehaviour
         {
             if (c.gameObject.GetComponent<Interactable>() != null)
             {
-                Debug.Log(i++);
                 if (c.gameObject.GetComponent<Interactable>().isInteractable())
                 {
                     return c.transform.gameObject;

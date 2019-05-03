@@ -5,10 +5,10 @@ using UnityEngine;
 public abstract class NPC : MonoBehaviour {
 
     public string characterName;
-    List<string> dialogLines;
+    List<DialogLine> dialogLines;
 	// Use this for initialization
 	void Awake () {
-        dialogLines = new List<string>();
+        dialogLines = new List<DialogLine>();
 	}
 	
 	// Update is called once per frame
@@ -16,14 +16,15 @@ public abstract class NPC : MonoBehaviour {
 		
 	}
 
-    public void addLine(string line)
+    public void addLine(DialogLine line)
     {
         dialogLines.Add(line);
     }
 
     public string getLine(int index)
     {
-        return dialogLines[index];
+
+        return dialogLines[index].getLine();
     }
 
     public abstract void exitTalking();

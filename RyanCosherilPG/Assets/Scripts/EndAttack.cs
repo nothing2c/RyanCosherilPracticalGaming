@@ -13,12 +13,10 @@ public class EndAttack : StateMachineBehaviour {
         if(hasHit)
         {
             weaponCollider.enabled = false;
-            Debug.Log("disabled");
         }
         else
         {
             weaponCollider.enabled = true;
-            Debug.Log("enabled");
         }
     }
 
