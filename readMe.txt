@@ -1,0 +1,2 @@
+since the presentation i added the ability for a conversation to go on for more than one line
+i tried implementing responses and for a character to turn into an enemy after a choice but i didnt have time to do it
